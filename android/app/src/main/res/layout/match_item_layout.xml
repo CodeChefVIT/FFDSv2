@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:elevation="8dp"
+    app:cardCornerRadius="8dp">
+
+    <com.chauthai.swipereveallayout.SwipeRevealLayout
+        android:id="@+id/swipeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:dragEdge="left|right"
+        android:background="@color/colorPrimary"
+        app:mode="normal">
+
+        <ImageView
+            android:id="@+id/reject"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/reject_icon" />
+
+        <ImageView
+            android:id="@+id/accept"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/cupid_icon" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#201F1F"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/match_image"
+                android:layout_width="144dp"
+                android:layout_height="130dp"
+                android:layout_gravity="center"
+                android:src="@drawable/re"
+                app:civ_border_color="@color/colorPrimary"
+                app:civ_border_width="2dp" />
+
+            <TextView
+                android:id="@+id/match_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/roboto_medium"
+                android:text="James Rodriguez"
+                android:textColor="#fff"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/match_bio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/roboto_medium"
+                android:paddingHorizontal="20dp"
+                android:text="I am where nature is. Mountains and bikes are my stress busters. Looking for an adventurer."
+                android:textColor="@color/colorPrimary"
+                android:textSize="12sp"
+                android:textStyle="italic" />
+
+            <Button
+                android:id="@+id/view_match"
+                android:layout_width="240dp"
+                android:layout_height="64dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/button_back2"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Show Profile"
+                android:textAllCaps="false"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+    </com.chauthai.swipereveallayout.SwipeRevealLayout>
+
+</androidx.cardview.widget.CardView>

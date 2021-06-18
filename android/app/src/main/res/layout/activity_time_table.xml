@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ED000000"
+    tools:context=".TimeTable"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/icon" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/uploadTimeTable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_back3"
+        android:drawableStart="@drawable/add_file"
+        android:drawablePadding="4dp"
+        android:fontFamily="@font/roboto_medium"
+        android:layout_gravity="center_horizontal"
+        android:text="Upload Timetable"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="16sp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp">
+
+        <TableLayout
+            android:id="@+id/table_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+
+        </TableLayout>
+
+    </HorizontalScrollView>
+
+    <Button
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/save_time_table"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:padding="10dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/button_back"
+        android:fontFamily="@font/roboto_medium"
+        android:text="Save Time Table"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white" />
+
+</LinearLayout>

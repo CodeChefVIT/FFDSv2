@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ED000000">
+
+    <ImageView
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/icon"
+        android:id="@+id/top_icon"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@android:color/white"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:text="Feed"
+        android:id="@+id/feed"
+        android:textSize="32sp"
+        android:layout_below="@id/top_icon"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/matches_list"
+        android:layout_margin="10dp"
+        android:layout_below="@id/feed"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#fff"
+            android:textSize="32sp"
+            android:textStyle="italic"
+            android:fontFamily="casual"
+            android:text="No matches found :("
+            android:visibility="invisible"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
+
+</RelativeLayout>
