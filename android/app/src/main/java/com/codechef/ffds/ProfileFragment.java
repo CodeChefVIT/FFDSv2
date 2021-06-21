@@ -41,28 +41,31 @@ public class ProfileFragment extends Fragment {
 
         viewModel.getUserData().observe(getViewLifecycleOwner(), user -> {
 
-            ArrayList<String> tags = user.getExpectations().isEmpty() ? new ArrayList<>() : (ArrayList<String>) user.getExpectations();
-            TagGroup tagContainerLayout = root.findViewById(R.id.tagView);
-            tagContainerLayout.setTags(tags);
+            if(user != null) {
+                ArrayList<String> tags = user.getExpectations().isEmpty() ? new ArrayList<>() : (ArrayList<String>) user.getExpectations();
+                TagGroup tagContainerLayout = root.findViewById(R.id.tagView);
+                tagContainerLayout.setTags(tags);
 
-            Button signOut = root.findViewById(R.id.sign_out);
-            signOut.setOnClickListener(v -> {
-                viewModel.clear();
-                startActivity(new Intent(getContext(), LoginActivity.class));
-                getActivity().finishAffinity();
-            });
+                Button signOut = root.findViewById(R.id.sign_out);
+                signOut.setOnClickListener(v -> {
+                    viewModel.clear();
+                    startActivity(new Intent(getContext(), LoginActivity.class));
+                    getActivity().finishAffinity();
+                });
 
-            bio.setText(user.getBio());
-            name.setText(user.getName());
-            phone.setText(user.getPhone());
+                bio.setText(user.getBio());
+                name.setText(user.getName());
+                phone.setText(user.getPhone());
 
-            CircleImageView imageView = root.findViewById(R.id.profileImage);
-            try {
-                imageView.setImageBitmap(loadImageFromStorage(user.getImagePath()));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                CircleImageView imageView = root.findViewById(R.id.profileImage);
+                try {
+                    imageView.setImageBitmap(loadImageFromStorage(user.getImagePath()));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
             }
         });
+
         Button edit = root.findViewById(R.id.edit_profile);
         edit.setOnClickListener(v -> {
             startActivity(new Intent(getContext(), UpdateProfileActivity.class));

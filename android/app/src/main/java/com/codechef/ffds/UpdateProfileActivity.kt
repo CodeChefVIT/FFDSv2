@@ -1,15 +1,19 @@
 package com.codechef.ffds
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.ImageDecoder
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -66,6 +70,18 @@ class UpdateProfileActivity : AppCompatActivity() {
 
             }
 
+        val resultLauncher2 =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val data = result.data
+                    val args = data?.getBundleExtra("bundle")
+                    user =
+                        user.copy(slot = args?.getSerializable("tableMap") as java.util.ArrayList<java.util.ArrayList<HashMap<String, Boolean>>>)
+                    Log.d("myTag", user.slot.toString())
+                }
+
+            }
+
         binding.apply {
             uploadDp.setOnClickListener {
                 val gallery = Intent()
@@ -86,7 +102,12 @@ class UpdateProfileActivity : AppCompatActivity() {
             }
 
             uploadTimeTable.setOnClickListener {
-                startActivity(Intent(this@UpdateProfileActivity, TimeTable::class.java))
+                val intent = Intent(this@UpdateProfileActivity, TimeTable::class.java)
+                val bundle = Bundle()
+                val tableMap = if (user.slot.isEmpty()) Slots().getSlots() else user.slot
+                bundle.putSerializable("tableMap", tableMap as Serializable)
+                intent.putExtra("bundle", bundle)
+                resultLauncher2.launch(intent)
             }
 
             saveProfile.setOnClickListener {
@@ -103,12 +124,17 @@ class UpdateProfileActivity : AppCompatActivity() {
     }
 
     private fun updateUser(user: Profile) {
+        val dialog = Dialog(this)
+        dialog.setContentView(layoutInflater.inflate(R.layout.loading_dialog, null))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
         val om = ObjectMapper()
         val fields = om.writeValueAsString(user)
         val body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), fields)
         Api.retrofitService.update(user.token, body)
             ?.enqueue(object : retrofit2.Callback<ResponseBody?> {
                 override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                    dialog.dismiss()
                     Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
                 }
 
@@ -116,6 +142,7 @@ class UpdateProfileActivity : AppCompatActivity() {
                     call: Call<ResponseBody?>,
                     response: Response<ResponseBody?>
                 ) {
+                    dialog.dismiss()
                     if (response.message() == "OK") {
                         viewModel.update(user)
                         startActivity(Intent(baseContext, MainActivity::class.java))

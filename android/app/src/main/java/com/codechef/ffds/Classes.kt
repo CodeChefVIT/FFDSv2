@@ -29,7 +29,7 @@ data class Profile(
     val bio: String = "",
     val year: String = "",
     @TypeConverters(DataConverter::class) val expectations: List<String> = emptyList(),
-    @TypeConverters(DataConverter::class) val slot: List<String> = emptyList(),
+    @TypeConverters(MapConverter::class) val slot: ArrayList<ArrayList<HashMap<String, Boolean>>> = ArrayList(),
     val name: String = "",
     val email: String = "",
     val phone: String = "",

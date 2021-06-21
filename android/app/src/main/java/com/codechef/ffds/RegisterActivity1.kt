@@ -1,6 +1,9 @@
 package com.codechef.ffds
 
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -18,16 +21,6 @@ class RegisterActivity1 : AppCompatActivity() {
     lateinit var binding: Register1ActivityBinding
     lateinit var viewModel: UserViewModel
     var user = Profile()
-
-    override fun onStart() {
-        super.onStart()
-
-        if (this.getDatabasePath("user_database").exists()) {
-            startActivity(Intent(this, MainActivity::class.java))
-            finishAffinity()
-        }
-
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,6 +80,12 @@ class RegisterActivity1 : AppCompatActivity() {
     }
 
     private fun register(email: String, password: String) {
+
+        val dialog = Dialog(this)
+        dialog.setContentView(layoutInflater.inflate(R.layout.loading_dialog, null))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
+
         val fields = mutableMapOf(
             "email" to email,
             "password" to password,
@@ -94,6 +93,7 @@ class RegisterActivity1 : AppCompatActivity() {
 
         Api.retrofitService.register(fields)?.enqueue(object : Callback<ResponseBody?> {
             override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                dialog.dismiss()
                 Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
             }
 
@@ -101,6 +101,7 @@ class RegisterActivity1 : AppCompatActivity() {
                 call: Call<ResponseBody?>,
                 response: Response<ResponseBody?>
             ) {
+                dialog.dismiss()
                 if (response.message() == "OK") {
                     Toast.makeText(
                         applicationContext,

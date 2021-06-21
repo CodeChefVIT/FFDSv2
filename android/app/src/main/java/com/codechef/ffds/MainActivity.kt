@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         val user = viewModel.getUserData()
 
         val apiHolder=retrofit.create(ApiHolder::class.java)
-        val call=apiHolder.showFeed("JWT ${user.token}",
+        val call=apiHolder.showFeed(user.token,
             user.gender, "20")
 
         call.enqueue(object: Callback<Feed>{

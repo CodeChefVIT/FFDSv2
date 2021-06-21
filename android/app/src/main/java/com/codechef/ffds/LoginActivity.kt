@@ -1,6 +1,9 @@
 package com.codechef.ffds
 
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -52,15 +55,19 @@ class LoginActivity : AppCompatActivity() {
 
     private fun loginUser(email: String, password: String) {
 
+        val dialog = Dialog(this)
+        dialog.setContentView(layoutInflater.inflate(R.layout.loading_dialog, null))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
         val fields = mutableMapOf("email" to email, "password" to password)
 
         Api.retrofitService.login(fields)!!.enqueue(object : Callback<Token?> {
             override fun onFailure(call: Call<Token?>, t: Throwable) {
+                dialog.dismiss()
                 Toast.makeText(baseContext, t.message, Toast.LENGTH_SHORT).show()
             }
 
             override fun onResponse(call: Call<Token?>, response: Response<Token?>) {
-                Toast.makeText(baseContext, response.message(), Toast.LENGTH_SHORT).show()
                 val token = response.body()?.token
                 if (response.message() == "OK") {
                     if (token != null) {
@@ -71,6 +78,7 @@ class LoginActivity : AppCompatActivity() {
                 else
                     Toast.makeText(applicationContext, response.message(), Toast.LENGTH_SHORT)
                         .show()
+                dialog.dismiss()
             }
         })
     }
@@ -86,7 +94,7 @@ class LoginActivity : AppCompatActivity() {
                     response: Response<Profile?>
                 ) {
                     if (response.message() == "OK") {
-                        var user: Profile = response.body()!!
+                        val user: Profile = response.body()!!
                         viewModel.update(user.copy(token = token))
                         startActivity(Intent(baseContext, MainActivity::class.java))
                         finish()

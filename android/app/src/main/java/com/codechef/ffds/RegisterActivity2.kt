@@ -1,6 +1,9 @@
 package com.codechef.ffds
 
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -70,13 +73,19 @@ class RegisterActivity2 : AppCompatActivity() {
     }
 
     private fun updateUser(user: Profile) {
+
+        val dialog = Dialog(this)
+        dialog.setContentView(layoutInflater.inflate(R.layout.loading_dialog, null))
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
+
         val om = ObjectMapper()
         val fields = om.writeValueAsString(user)
         val body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), fields)
         Api.retrofitService.update(user.token, body)
             ?.enqueue(object : retrofit2.Callback<ResponseBody?> {
                 override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
-                    Log.d("tag3", t.toString())
+                    dialog.dismiss()
                     Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
                 }
 
@@ -84,7 +93,7 @@ class RegisterActivity2 : AppCompatActivity() {
                     call: Call<ResponseBody?>,
                     response: Response<ResponseBody?>
                 ) {
-                    Log.d("tag2", response.toString())
+                    dialog.dismiss()
                     if (response.message() == "OK") {
                         viewModel.update(user)
                         startActivity(Intent(baseContext, MainActivity::class.java))

@@ -8,21 +8,26 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import com.codechef.ffds.databinding.ActivityTimeTableBinding
+import java.io.Serializable
 import java.util.*
 
 
 class TimeTable : AppCompatActivity() {
 
-    companion object {
+    /*companion object {
         private val tableMap = Slots().getSlots()
-    }
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityTimeTableBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val bundle = intent.getBundleExtra("bundle")
+        val tableMap = bundle?.getSerializable("tableMap") as ArrayList<ArrayList<HashMap<String, Boolean>>>
+        val viewModel = ViewModelProvider(this, UserViewModelFactory(application)).get(UserViewModel::class.java)
         val resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
@@ -42,8 +47,18 @@ class TimeTable : AppCompatActivity() {
                 resultLauncher.launch(Intent.createChooser(gallery, "Upload Time Table"))
             }
 
-            saveTimeTable.setOnClickListener {
+            ok.setOnClickListener {
 
+                val intent = Intent()
+                val args = Bundle()
+                args.putSerializable("tableMap", tableMap as Serializable)
+                intent.putExtra("bundle", args)
+                setResult(RESULT_OK, intent)
+                finish()
+                /*viewModel.getUserData().observe(this@TimeTable) { user ->
+                    viewModel.update(user.copy(slot = tableMap))
+                }
+                startActivity(Intent(this@TimeTable, MainActivity::class.java))*/
             }
 
             for (i in 0..6) {

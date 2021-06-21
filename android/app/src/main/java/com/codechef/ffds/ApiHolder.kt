@@ -10,11 +10,6 @@ import retrofit2.http.*
 val retrofit: Retrofit = Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
     .baseUrl("https://ffds-backend.azurewebsites.net/").build()
 
-val retrofitForSlots: Retrofit = Retrofit.Builder()
-    .addConverterFactory(GsonConverterFactory.create())
-    .baseUrl("http://54.91.224.22:8000/")
-    .build()
-
 interface ApiHolder {
     @FormUrlEncoded
     @POST("user/register")
@@ -63,9 +58,5 @@ interface ApiHolder {
 object Api {
     val retrofitService: ApiHolder by lazy {
         retrofit.create(ApiHolder::class.java)
-    }
-
-    val retrofitService2: ApiHolder by lazy {
-        retrofitForSlots.create(ApiHolder::class.java)
     }
 }

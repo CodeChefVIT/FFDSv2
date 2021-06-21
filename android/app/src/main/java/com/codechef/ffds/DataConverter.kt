@@ -8,19 +8,19 @@ import java.lang.reflect.Type
 
 class DataConverter {
     @TypeConverter
-    fun fromStringList(countryLang: List<String>): String {
+    fun fromStringList(list: List<String>): String {
         val gson = Gson()
         val type: Type = object : TypeToken<List<String>>() {}.type
-        return gson.toJson(countryLang, type)
+        return gson.toJson(list, type)
     }
 
     @TypeConverter
-    fun toStringList(countryLangString: String?): List<String>? {
-        if (countryLangString == null) {
+    fun toStringList(string: String?): List<String>? {
+        if (string == null) {
             return null
         }
         val gson = Gson()
         val type: Type = object : TypeToken<List<String?>?>() {}.type
-        return gson.fromJson<List<String>>(countryLangString, type)
+        return gson.fromJson<List<String>>(string, type)
     }
 }
