@@ -17,8 +17,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.codechef.ffds.databinding.UpdateProfileActivityBinding
+import com.cunoraz.tagview.Tag
 import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.MediaType
 import okhttp3.RequestBody
@@ -77,7 +79,6 @@ class UpdateProfileActivity : AppCompatActivity() {
                     val args = data?.getBundleExtra("bundle")
                     user =
                         user.copy(slot = args?.getSerializable("tableMap") as java.util.ArrayList<java.util.ArrayList<HashMap<String, Boolean>>>)
-                    Log.d("myTag", user.slot.toString())
                 }
 
             }
@@ -91,14 +92,13 @@ class UpdateProfileActivity : AppCompatActivity() {
                 resultLauncher.launch(Intent.createChooser(gallery, "Select profile photo"))
             }
 
-
             add.setOnClickListener {
                 handleTags(tags)
             }
 
-            tagView.setOnTagClickListener { _, tag, _ ->
-                tags.remove(tag)
-                tagView.setTags(tags)
+            tagView2.setOnTagDeleteListener { _, tag, position ->
+                tags.remove(tag.text)
+                tagView2.remove(position)
             }
 
             uploadTimeTable.setOnClickListener {
@@ -116,7 +116,7 @@ class UpdateProfileActivity : AppCompatActivity() {
                         bio = bio.text.toString().trim(),
                         name = yourName.text.toString().trim(),
                         phone = phoneNoEdit.text.toString(),
-                        expectations = tagView.tags.asList()
+                        expectations = tags
                     )
                 )
             }
@@ -131,6 +131,7 @@ class UpdateProfileActivity : AppCompatActivity() {
         val om = ObjectMapper()
         val fields = om.writeValueAsString(user)
         val body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), fields)
+        Log.d("myTag", fields)
         Api.retrofitService.update(user.token, body)
             ?.enqueue(object : retrofit2.Callback<ResponseBody?> {
                 override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
@@ -164,7 +165,12 @@ class UpdateProfileActivity : AppCompatActivity() {
                 bio.setText(user.bio)
                 yourName.setText(user.name)
                 phoneNoEdit.text = user.phone
-                tagView.setTags(user.expectations)
+                tagView2.setTagMargin(10f)
+                tagView2.setTextPaddingTop(2f)
+                tagView2.settextPaddingBottom(2f)
+                for (tag in tags) {
+                    tagView2.addTag(getNewTag(tag))
+                }
                 try {
                     dp.setImageBitmap(loadImageFromStorage(user.imagePath))
                 } catch (e: FileNotFoundException) {
@@ -179,6 +185,7 @@ class UpdateProfileActivity : AppCompatActivity() {
             val tag = addTags.text.toString().trim()
             if (tag.isNotEmpty()) {
                 if (!tags.contains(tag)) {
+                    tagView2.addTag(getNewTag(tag))
                     tags.add(tag)
                 } else
                     Toast.makeText(
@@ -187,7 +194,6 @@ class UpdateProfileActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
             }
-            tagView.setTags(tags)
             addTags.text = null
         }
     }
@@ -210,6 +216,15 @@ class UpdateProfileActivity : AppCompatActivity() {
             }
         }
         return directory.absolutePath
+    }
+
+    private fun getNewTag(text: String): Tag {
+        val tag = Tag(text)
+        tag.isDeletable = true
+        tag.layoutColor =
+            ContextCompat.getColor(this, R.color.colorPrimary)
+
+        return tag
     }
 
     @Throws(FileNotFoundException::class)

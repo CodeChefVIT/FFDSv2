@@ -1,5 +1,6 @@
 package com.codechef.ffds;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class MessagesFragment extends Fragment {
 
@@ -32,16 +32,22 @@ public class MessagesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         recyclerView.setAdapter(adapter);
 
-        ArrayList<Messages> list=new ArrayList<>();
+        ArrayList<Messages> list = new ArrayList<>();
         list.add(new Messages("Hey", R.drawable.re, "Goku"));
         list.add(new Messages("Yo", R.drawable.re, "Naruto"));
         list.add(new Messages("Hey", R.drawable.re, "Saitama"));
         list.add(new Messages("Buri Buri", R.drawable.re, "Shinchan"));
         list.add(new Messages("...", R.drawable.re, "Anonymous"));
-        RecyclerView recyclerView1=root.findViewById(R.id.messages_view);
-        MessageAdapter messageAdapter=new MessageAdapter(getContext(), list);
+        RecyclerView recyclerView1 = root.findViewById(R.id.messages_view);
+        MessageAdapter messageAdapter = new MessageAdapter(getContext(), list);
         recyclerView1.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView1.setAdapter(messageAdapter);
+
+        messageAdapter.setOnItemClickListener(position -> {
+            Intent intent = new Intent(getActivity(), ChatActivity.class);
+            intent.putExtra("Name", list.get(position).getName());
+            startActivity(intent);
+        });
 
         return root;
     }

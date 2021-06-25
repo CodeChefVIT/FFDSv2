@@ -12,11 +12,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.aotasoft.taggroup.TagGroup;
+import com.cunoraz.tagview.Tag;
+import com.cunoraz.tagview.TagView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,10 +42,15 @@ public class ProfileFragment extends Fragment {
 
         viewModel.getUserData().observe(getViewLifecycleOwner(), user -> {
 
-            if(user != null) {
+            if (user != null) {
                 ArrayList<String> tags = user.getExpectations().isEmpty() ? new ArrayList<>() : (ArrayList<String>) user.getExpectations();
-                TagGroup tagContainerLayout = root.findViewById(R.id.tagView);
-                tagContainerLayout.setTags(tags);
+
+                TagView tagView = root.findViewById(R.id.tagView2);
+                tagView.setTagMargin(10f);
+                tagView.setTextPaddingTop(2f);
+                tagView.settextPaddingBottom(2f);
+                for (String tag : tags)
+                    tagView.addTag(getNewTag(tag));
 
                 Button signOut = root.findViewById(R.id.sign_out);
                 signOut.setOnClickListener(v -> {
@@ -77,5 +83,13 @@ public class ProfileFragment extends Fragment {
     private Bitmap loadImageFromStorage(String path) throws FileNotFoundException {
         File f = new File(path, "profileImage.jpg");
         return BitmapFactory.decodeStream(new FileInputStream(f));
+    }
+
+    private Tag getNewTag(String text) {
+        Tag tag = new Tag(text);
+        tag.layoutColor =
+                ContextCompat.getColor(getContext(), R.color.colorPrimary);
+
+        return tag;
     }
 }
