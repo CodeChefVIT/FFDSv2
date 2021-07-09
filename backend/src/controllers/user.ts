@@ -61,14 +61,14 @@ const verifyUser = (req: Request, res: Response, next: NextFunction) =>{
     })
 }
 
-const slotUploader = async(req: Request, res: Response, next: NextFunction) => {
+const slotUploader = (req: Request, res: Response, next: NextFunction) => {
     const {slots} = req.body;
 
     if(slots.length===0){
         return res.status(401).send({message:"No Slots are free"})
     }
 
-    // let slotsMap = await slotMapper(slots);
+    slotMapper(slots,req,res,next);
 }
 
 const sendEmailLink = async(req: Request, res: Response, next: NextFunction) =>{
