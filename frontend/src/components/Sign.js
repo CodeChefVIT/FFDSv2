@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import './Sign.css';
 
  function Signup() {
+   
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmpassword, setConfirmPassword]= useState("");
@@ -15,7 +16,7 @@ import './Sign.css';
       event.preventDefault();
       if (password===confirmpassword)
       {
-        console.log("sucess")
+        console.log("success")
       
       }
       else{
@@ -25,6 +26,7 @@ import './Sign.css';
     }
   
     return (
+      
       <div className="signup">
         <Form onSubmit={handleSubmit}>
           <Form.Group size="lg" controlId="email">

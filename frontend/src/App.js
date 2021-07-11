@@ -6,6 +6,8 @@ import Login from './components/Login.js';
 import Footer from './components/Footer.js';
 import QnA from './components/QnA.js';
 import Signup from './components/Sign.js';
+// import Moreinfo from './components/Moreinfo.js';
+
 
 
 
@@ -22,11 +24,14 @@ function App() {
      
         <Navbar></Navbar>
         {/* <div className="container"> */}
-        <Content></Content>
+        <Content islogin={islogin}></Content>
         {islogin?
         <Login></Login>:
         
         <Signup></Signup>}
+        {/* <Moreinfo></Moreinfo> */}
+        
+        
         <div className="loginmessage">
         <a href="/#"onClick={togglelogin} >{islogin ? <h1 >Not yet registered,Sign up</h1>: <h1>Already have an account,login now</h1> } </a>
         </div>

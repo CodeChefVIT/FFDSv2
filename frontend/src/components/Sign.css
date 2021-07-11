@@ -1,26 +1,10 @@
 .signup{
     padding-left:100px;
+    padding-bottom:40px;
     color:#991274;
-    border:0px;
-    border-bottom:5px;
-    outline:0px;
 
 }
-.form{
-    outline:0px;
-}
-.input{
-    border:transparent !important;
-    border-bottom-color:#991274 !important;
-    width:300px;
-}
-.loginmessage
-{
-    padding-top:40px;
-     padding-left:100px;
-     padding-bottom:50px;
-     color:#991274 !important;
-}
+
 .loginbutton{
 
     margin-top:30px;

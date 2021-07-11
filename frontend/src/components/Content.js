@@ -1,10 +1,12 @@
 import'./Content.css';
-function Content(){
+function Content(props){
   
     return (
         <div className="content">
-            <h1>Hey !,</h1>
-            <h1>Welcome back</h1>
+            {/* <h1>Hey !,</h1>
+            <h1>Welcome back</h1> */}
+            {props.islogin ? <h1 >Hey!<br/>Welcome Back</h1>: <h1>HOLLA!<br/>Welcome to ffds</h1> } 
+            
             <div>
             <h4>Please enter the required fields:</h4>
             </div>
