@@ -80,7 +80,7 @@ class ChatAdapter: ListAdapter<Chat, RecyclerView.ViewHolder>(DiffCallback()) {
         fun bind(chat: Chat) {
             binding.apply {
                 message.text = chat.text
-                time.text = getTime(chat.timeStamp)
+                time.text = getTime(chat.createdAt.time)
             }
         }
     }
@@ -90,7 +90,7 @@ class ChatAdapter: ListAdapter<Chat, RecyclerView.ViewHolder>(DiffCallback()) {
         fun bind(chat: Chat) {
             binding.apply {
                 message.text = chat.text
-                time.text = getTime(chat.timeStamp)
+                time.text = getTime(chat.createdAt.time)
             }
         }
     }
@@ -100,7 +100,7 @@ class ChatAdapter: ListAdapter<Chat, RecyclerView.ViewHolder>(DiffCallback()) {
         fun bind(chat: Chat) {
             binding.apply {
                 message.text = chat.text
-                time.text = getTime(chat.timeStamp)
+                time.text = getTime(chat.createdAt.time)
             }
         }
     }

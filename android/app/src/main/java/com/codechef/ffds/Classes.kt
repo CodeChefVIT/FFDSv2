@@ -4,6 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import java.io.Serializable
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 data class User(
     val name: String,
@@ -16,11 +19,11 @@ enum class ItemType {
 }
 
 data class Chat(
-    val conversationID: String,
+    val conversationId: String,
     val senderId: String,
     val senderName: String,
     val text: String,
-    val timeStamp: Long,
+    val createdAt: Date,
     val type: ItemType
 )
 

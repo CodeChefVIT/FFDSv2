@@ -105,8 +105,8 @@ class ChatActivity : AppCompatActivity() {
                                         val list = response.body()
                                         if (list != null) {
                                             for (chat in list) {
-                                                addDate(chat.timeStamp)
-                                                chats.add(chat)
+                                                addDate(chat.createdAt.time)
+                                                chats.add(chat.copy(type = getType(chat)))
                                             }
                                             chatAdapter.submitList(chats)
                                         }
@@ -151,15 +151,15 @@ class ChatActivity : AppCompatActivity() {
                     message.text = null
                     val date = Date()
                     val chat = Chat(
-                        conversationID = conversationId,
+                        conversationId = conversationId,
                         senderId = "60e8058ddf3e3f00338a2c41",
                         senderName = name!!,
                         text = msg,
-                        timeStamp = date.time,
-                        type = ItemType.Sent
+                        type = ItemType.Sent,
+                        createdAt = date
                     )
 
-                    val flag = addDate(chat.timeStamp)
+                    val flag = addDate(chat.createdAt.time)
 
                     //chats.add(if (flag) chat.copy(type = ItemType.SentMid) else chat)
                     chats.add(chat)
@@ -176,16 +176,16 @@ class ChatActivity : AppCompatActivity() {
 
     private fun addDate(timestamp: Long): Boolean {
         val dt = Chat(
-            conversationID = "",
+            conversationId = "",
             senderId = "",
             senderName = "",
             text = getDate(timestamp),
-            timeStamp = 0L,
             type = ItemType.Date,
+            createdAt = Date()
         )
         return if (chats.size != 0) {
             val prevChat = chats.last()
-            val prevTimeStamp = prevChat.timeStamp
+            val prevTimeStamp = prevChat.createdAt.time
             if (getDate(timestamp) != getDate(prevTimeStamp))
                 chats.add(dt)
             prevChat.type == ItemType.Sent || prevChat.type == ItemType.SentMid
@@ -193,6 +193,13 @@ class ChatActivity : AppCompatActivity() {
             chats.add(dt)
             false
         }
+    }
+
+    private fun getType(chat: Chat): ItemType {
+        return if (chat.senderId == "60e8058ddf3e3f00338a2c41")
+            ItemType.Sent
+        else
+            ItemType.Received
     }
 
     private fun getDate(timestamp: Long): String {
