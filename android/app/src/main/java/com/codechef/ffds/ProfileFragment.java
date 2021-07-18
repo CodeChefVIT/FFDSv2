@@ -64,11 +64,9 @@ public class ProfileFragment extends Fragment {
                 phone.setText(user.getPhone());
 
                 CircleImageView imageView = root.findViewById(R.id.profileImage);
-                try {
-                    imageView.setImageBitmap(loadImageFromStorage(user.getImagePath()));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                /*byte[] image = Base64.decode(user.getUserImage().getBytes(), Base64.DEFAULT);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                imageView.setImageBitmap(bitmap);*/
             }
         });
 

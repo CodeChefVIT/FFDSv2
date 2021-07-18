@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/sendLayout"
         android:layout_below="@id/toolbar"
-        android:background="@android:color/darker_gray"
+        android:background="#ED000000"
         android:padding="15dp" />
 
     <LinearLayout
@@ -47,6 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
+        android:background="@color/lightGray"
         android:padding="10dp">
 
         <EditText

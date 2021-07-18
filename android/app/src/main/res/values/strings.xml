@@ -3,4 +3,7 @@
     <string name="profile">Profile</string>
     <string name="matches">Matches</string>
     <string name="direct">Direct</string>
+    <string name="logo">Logo</string>
+    <string name="feed">Feed</string>
+    <string name="no_matches_found">No matches found :(</string>
 </resources>

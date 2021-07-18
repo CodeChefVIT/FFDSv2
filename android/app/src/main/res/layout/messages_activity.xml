@@ -25,12 +25,14 @@
         android:textSize="32sp"/>
 
     <TextView
+        android:id="@+id/no_matches"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto_medium"
         android:textColor="#CECCCC"
-        android:layout_marginTop="10dp"
-        android:text="You have no text matches yet."/>
+        android:layout_marginTop="30dp"
+        android:text="You don't have any matches yet."
+        android:textSize="20sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
@@ -50,12 +52,14 @@
         android:textSize="32sp"/>
 
     <TextView
+        android:id="@+id/no_messages"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto_medium"
         android:textColor="#CECCCC"
-        android:layout_marginTop="10dp"
-        android:text="You have no text messages yet."/>
+        android:layout_marginTop="30dp"
+        android:text="You don't have any messages yet.\nSend your match a message."
+        android:textSize="20sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"

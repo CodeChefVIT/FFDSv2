@@ -2,15 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_alignParentEnd="true"
     android:orientation="vertical"
+    android:paddingStart="60dp"
     android:paddingTop="10dp"
-    android:paddingStart="15dp"
-    android:paddingEnd="60dp">
+    android:paddingEnd="15dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded1"
+        android:layout_gravity="end"
+        android:background="@drawable/rounded"
+        android:backgroundTint="@color/colorPrimary"
         android:fontFamily="@font/roboto_medium"
         android:orientation="vertical"
         android:paddingStart="16dp"
@@ -29,13 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/lightGray" />
-    </LinearLayout>
 
-    <ImageView
-        android:layout_width="8dp"
-        android:layout_height="16dp"
-        android:layout_gravity="start"
-        android:layout_marginTop="-1.5dp"
-        android:background="@drawable/corner1" />
+    </LinearLayout>
 
 </LinearLayout>

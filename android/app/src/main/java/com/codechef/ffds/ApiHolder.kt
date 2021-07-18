@@ -10,6 +10,10 @@ import retrofit2.http.*
 val retrofit: Retrofit = Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
     .baseUrl("https://ffds-backend.azurewebsites.net/").build()
 
+val retrofitForSlots: Retrofit =
+    Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
+        .baseUrl("http://54.91.224.22:8000/docs/").build()
+
 interface ApiHolder {
     @FormUrlEncoded
     @POST("user/register")
@@ -50,13 +54,41 @@ interface ApiHolder {
 
     @POST("uploadfile")
     @Multipart
-    fun getSlots(
+    fun getSlots()
 
-    )
+    @FormUrlEncoded
+    @POST("conversation")
+    fun createConversation(@FieldMap fields: Map<String, String>): Call<ResponseBody?>?
+
+    @GET("conversation")
+    fun getAllConversations(@QueryMap fields: Map<String, String>): Call<ResponseBody?>?
+
+    @GET("conversation/find/{userId}")
+    fun getSpecificConversation(
+        @Header("Authorization") header: String?,
+        @Path("userId") userId: String
+    ): Call<Conversation?>?
+
+    @GET("message/{conversationId}")
+    fun getAllMessages(
+        @Header("Authorization") header: String?,
+        @Path("conversationId") conversationId: String
+    ): Call<ArrayList<Chat>?>?
+
+    @POST("message")
+    fun sendMessage(
+        @Header("Authorization") header: String?,
+        @Body fields: RequestBody
+    ): Call<ResponseBody?>?
+
 }
 
 object Api {
     val retrofitService: ApiHolder by lazy {
         retrofit.create(ApiHolder::class.java)
+    }
+
+    val retrofitServiceForSlots: ApiHolder by lazy {
+        retrofitForSlots.create(ApiHolder::class.java)
     }
 }
