@@ -15,15 +15,15 @@ data class User(
 )
 
 enum class ItemType {
-    Sent, SentMid, Received, Date
+    Sent, Received, Date
 }
 
 data class Chat(
     val conversationId: String,
     val senderId: String,
-    val senderName: String,
     val text: String,
     val createdAt: Date,
+    val updatedAt: Date,
     val type: ItemType
 )
 
@@ -44,7 +44,6 @@ data class Profile(
     val phone: String = "",
     val userImage: String = "",
     val userArray: ByteArray = byteArrayOf(),
-    @TypeConverters(DataConverter::class) val chat: List<String> = emptyList(),
 ) : Serializable
 
 data class ProfileResponse(
@@ -65,10 +64,12 @@ data class Feed(
 data class Messages(
     val lastMessage: String,
     val profileImage: Int,
-    val name: String
+    val name: String,
+    val id: String
 )
 
 data class Conversation(
+    val members: ArrayList<String>,
     val _id: String,
     val createdAt: String,
     val updatedAt: String

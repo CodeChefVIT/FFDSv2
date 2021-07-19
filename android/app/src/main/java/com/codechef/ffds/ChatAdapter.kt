@@ -8,11 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.codechef.ffds.databinding.ItemDateBinding
 import com.codechef.ffds.databinding.ItemMsgReceivedBinding
 import com.codechef.ffds.databinding.ItemMsgSentBinding
-import com.codechef.ffds.databinding.ItemMsgSentMidBinding
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ChatAdapter: ListAdapter<Chat, RecyclerView.ViewHolder>(DiffCallback()) {
+class ChatAdapter : ListAdapter<Chat, RecyclerView.ViewHolder>(DiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val currentItem = getItem(viewType)
         return when (currentItem.type) {
@@ -20,14 +19,6 @@ class ChatAdapter: ListAdapter<Chat, RecyclerView.ViewHolder>(DiffCallback()) {
                 val binding =
                     ItemMsgSentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 SentViewHolder(binding)
-            }
-            ItemType.SentMid -> {
-                val binding = ItemMsgSentMidBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
-                SentMidViewHolder(binding)
             }
             ItemType.Received -> {
                 val binding = ItemMsgReceivedBinding.inflate(
@@ -58,10 +49,6 @@ class ChatAdapter: ListAdapter<Chat, RecyclerView.ViewHolder>(DiffCallback()) {
                 val viewHolder = holder as SentViewHolder
                 viewHolder.bind(currentItem)
             }
-            SentMidViewHolder::class.java -> {
-                val viewHolder = holder as SentMidViewHolder
-                viewHolder.bind(currentItem)
-            }
             else -> {
                 val viewHolder = holder as DateViewHolder
                 viewHolder.bind(currentItem)
@@ -86,16 +73,6 @@ class ChatAdapter: ListAdapter<Chat, RecyclerView.ViewHolder>(DiffCallback()) {
     }
 
     inner class SentViewHolder(private val binding: ItemMsgSentBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(chat: Chat) {
-            binding.apply {
-                message.text = chat.text
-                time.text = getTime(chat.createdAt.time)
-            }
-        }
-    }
-
-    inner class SentMidViewHolder(private val binding: ItemMsgSentMidBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(chat: Chat) {
             binding.apply {

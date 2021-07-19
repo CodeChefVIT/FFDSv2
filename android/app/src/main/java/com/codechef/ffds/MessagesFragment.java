@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,9 +14,19 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MessagesFragment extends Fragment {
+
+    Profile user = MainActivity.Companion.getUser();
+    ArrayList<Conversation> conversations;
+    ArrayList<Messages> messages = new ArrayList<>();
 
     @Nullable
     @Override
@@ -46,27 +57,60 @@ public class MessagesFragment extends Fragment {
 
         });
 
-        ArrayList<Messages> list = new ArrayList<>();
-        list.add(new Messages("Hey", R.drawable.re, "Goku"));
-        list.add(new Messages("Yo", R.drawable.re, "Naruto"));
-        list.add(new Messages("Hey", R.drawable.re, "Saitama"));
-        list.add(new Messages("Buri Buri", R.drawable.re, "Shinchan"));
-        list.add(new Messages("...", R.drawable.re, "Anonymous"));
-
-        if (list.isEmpty())
-            noMessages.setVisibility(View.VISIBLE);
-        else
-            noMessages.setVisibility(View.GONE);
-
         RecyclerView recyclerView1 = root.findViewById(R.id.messages_view);
-        MessageAdapter messageAdapter = new MessageAdapter(getContext(), list);
+        MessageAdapter messageAdapter = new MessageAdapter(requireContext(), messages);
         recyclerView1.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView1.setAdapter(messageAdapter);
 
         messageAdapter.setOnItemClickListener(position -> {
             Intent intent = new Intent(getActivity(), ChatActivity.class);
-            intent.putExtra("Name", list.get(position).getName());
+            intent.putExtra("Name", messages.get(position).getName());
+            intent.putExtra("id", messages.get(position).getId());
             startActivity(intent);
+        });
+
+        Api.INSTANCE.getRetrofitService().getAllConversations(user.getToken()).enqueue(new Callback<ArrayList<Conversation>>() {
+            @Override
+            public void onFailure(@NotNull Call<ArrayList<Conversation>> call, @NotNull Throwable t) {
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onResponse(@NotNull Call<ArrayList<Conversation>> call, @NotNull Response<ArrayList<Conversation>> response) {
+                if (response.message().equals("OK")) {
+                    conversations = response.body();
+                    if (conversations != null) {
+                        messages.clear();
+                        for (Conversation conversation : conversations) {
+                            String id = conversation.getMembers().get(1);
+                            Api.INSTANCE.getRetrofitService().getUserDetail(id).enqueue(new Callback<Profile>() {
+                                @Override
+                                public void onFailure(@NotNull Call<Profile> call, @NotNull Throwable t) {
+                                    Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onResponse(@NotNull Call<Profile> call, @NotNull Response<Profile> response) {
+                                    if (response.message().equals("OK")) {
+                                        Profile user = response.body();
+                                        if (user != null)
+                                            messages.add(new Messages("last message", R.drawable.re, user.getName(), user.get_id()));
+                                    } else
+                                        Toast.makeText(requireContext(), response.message(), Toast.LENGTH_SHORT).show();
+                                }
+
+                            });
+                        }
+                        messageAdapter.notifyDataSetChanged();
+                        if (messages.isEmpty())
+                            noMessages.setVisibility(View.VISIBLE);
+                        else
+                            noMessages.setVisibility(View.GONE);
+                    }
+                } else
+                    Toast.makeText(requireContext(), response.message(), Toast.LENGTH_SHORT).show();
+            }
+
         });
 
         return root;

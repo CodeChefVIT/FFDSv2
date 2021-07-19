@@ -1,11 +1,17 @@
 package com.codechef.ffds
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
+
+val gson: Gson = GsonBuilder()
+    .excludeFieldsWithoutExposeAnnotation()
+    .create()
 
 val retrofit: Retrofit = Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
     .baseUrl("https://ffds-backend.azurewebsites.net/").build()
@@ -29,9 +35,8 @@ interface ApiHolder {
         @Body fields: RequestBody
     ): Call<ResponseBody?>?
 
-    @FormUrlEncoded
     @GET("user/details")
-    fun show(@FieldMap fields: Map<String?, String?>?): Call<User?>?
+    fun getUserDetail(@Query("id") id: String): Call<Profile?>?
 
     @POST("add/new/chat")
     fun addChat(@Body chat: Chat?): Call<Chat?>?
@@ -61,7 +66,7 @@ interface ApiHolder {
     fun createConversation(@FieldMap fields: Map<String, String>): Call<ResponseBody?>?
 
     @GET("conversation")
-    fun getAllConversations(@QueryMap fields: Map<String, String>): Call<ResponseBody?>?
+    fun getAllConversations(@Header("Authorization") header: String?): Call<ArrayList<Conversation>?>?
 
     @GET("conversation/find/{userId}")
     fun getSpecificConversation(
