@@ -72,7 +72,7 @@ public class MessagesFragment extends Fragment {
         Api.INSTANCE.getRetrofitService().getAllConversations(user.getToken()).enqueue(new Callback<ArrayList<Conversation>>() {
             @Override
             public void onFailure(@NotNull Call<ArrayList<Conversation>> call, @NotNull Throwable t) {
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "All Conversation: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -86,29 +86,46 @@ public class MessagesFragment extends Fragment {
                             Api.INSTANCE.getRetrofitService().getUserDetail(id).enqueue(new Callback<Profile>() {
                                 @Override
                                 public void onFailure(@NotNull Call<Profile> call, @NotNull Throwable t) {
-                                    Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "User details: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
 
                                 @Override
                                 public void onResponse(@NotNull Call<Profile> call, @NotNull Response<Profile> response) {
                                     if (response.message().equals("OK")) {
-                                        Profile user = response.body();
-                                        if (user != null)
-                                            messages.add(new Messages("last message", R.drawable.re, user.getName(), user.get_id()));
+                                        Profile profile = response.body();
+                                        if (profile != null) {
+                                            Api.INSTANCE.getRetrofitService().getLastMessage(profile.get_id()).enqueue(new Callback<Chat>() {
+                                                @Override
+                                                public void onFailure(@NotNull Call<Chat> call, @NotNull Throwable t) {
+                                                    Toast.makeText(getContext(), "last message: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+
+                                                @Override
+                                                public void onResponse(@NotNull Call<Chat> call, @NotNull Response<Chat> response) {
+                                                    if (response.message().equals("OK")) {
+                                                        Chat chat = response.body();
+                                                        if (chat != null)
+                                                            messages.add(new Messages(chat.getText(), R.drawable.re, profile.getName(), profile.get_id()));
+                                                    } else
+                                                        Toast.makeText(requireContext(), "last msg: " + response.message(), Toast.LENGTH_SHORT).show();
+                                                }
+
+                                            });
+                                        }
                                     } else
-                                        Toast.makeText(requireContext(), response.message(), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(requireContext(), "details: " + response.message(), Toast.LENGTH_SHORT).show();
                                 }
 
                             });
                         }
-                        messageAdapter.notifyDataSetChanged();
+                        messageAdapter.submitList(messages);
                         if (messages.isEmpty())
                             noMessages.setVisibility(View.VISIBLE);
                         else
                             noMessages.setVisibility(View.GONE);
                     }
                 } else
-                    Toast.makeText(requireContext(), response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Conversations: " + response.message(), Toast.LENGTH_SHORT).show();
             }
 
         });

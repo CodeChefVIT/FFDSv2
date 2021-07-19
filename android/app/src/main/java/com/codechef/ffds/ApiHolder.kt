@@ -80,6 +80,11 @@ interface ApiHolder {
         @Path("conversationId") conversationId: String
     ): Call<ArrayList<Chat>?>?
 
+    @GET("message/last/{userId}")
+    fun getLastMessage(
+        @Path("userId") userId: String
+    ): Call<Chat?>?
+
     @POST("message")
     fun sendMessage(
         @Header("Authorization") header: String?,

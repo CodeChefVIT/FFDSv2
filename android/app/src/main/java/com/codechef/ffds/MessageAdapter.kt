@@ -5,13 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import de.hdodenhof.circleimageview.CircleImageView
 
 class MessageAdapter internal constructor(
     private val context: Context,
     private val matches: ArrayList<Messages>
-) : RecyclerView.Adapter<MessageAdapter.ViewHolder>() {
+) : ListAdapter<Messages, MessageAdapter.ViewHolder>(DiffCallback()) {
 
     lateinit var mListener: OnItemClickListener
 
@@ -53,5 +55,13 @@ class MessageAdapter internal constructor(
             }
         }
 
+    }
+
+    class DiffCallback : DiffUtil.ItemCallback<Messages>() {
+        override fun areItemsTheSame(oldItem: Messages, newItem: Messages) =
+            //(oldItem.id == newItem.id)
+            (oldItem == newItem)
+
+        override fun areContentsTheSame(oldItem: Messages, newItem: Messages) = (oldItem == newItem)
     }
 }
