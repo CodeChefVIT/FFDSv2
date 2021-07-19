@@ -9,8 +9,12 @@ import slotMapper from './functions/slotMapper';
 import config from '../config/config';
 import jwt from 'jsonwebtoken';
 
+// let io = require('../socket/socket').io();
+
 const NAMESPACE = 'User Controller'
 const vitEmailRegex = /^([A-Za-z]+\.[A-za-z]+[0-9]{4,4}@vitstudent.ac.in)/gm;
+
+
 
 const validateToken = (req: Request, res: Response, next: NextFunction) =>{
     logging.info(NAMESPACE,`Token Validated, user authorized`)
@@ -23,6 +27,13 @@ const validateToken = (req: Request, res: Response, next: NextFunction) =>{
 
 const verifyUser = (req: Request, res: Response, next: NextFunction) =>{
     logging.info(NAMESPACE,`Verifying User Email`);
+    const io = req.app.locals.io;
+    const getUserVerify = (email:String) => {
+        return req.app.locals.users.find((user:any) => user.email === email);
+    };
+    const removeUserVerify = (socketId:String) =>{
+        req.app.locals.users = req.app.locals.users.filter((user:any)=>user.socketId !== socketId)
+    }
     const token:string = String(req.query.t);
     jwt.verify(token, config.server.token.secret, (err,decoded)=>{
         if(err)
@@ -35,7 +46,6 @@ const verifyUser = (req: Request, res: Response, next: NextFunction) =>{
         }else if(decoded){
             let {email,id}:any = decoded;
             User.findOne({email}).then(async(user:any) =>{
-                console.log(user)
                 if(!user){
                     return res.status(404).send(
                     {
@@ -46,6 +56,11 @@ const verifyUser = (req: Request, res: Response, next: NextFunction) =>{
                 if(id==user._id){
                     user.verified = true;
                     await user.save();
+                    let verifiedUser = await getUserVerify(user.email);
+                    if(verifiedUser){
+                        io.to(verifiedUser.socketId).emit("verified",{verified: true});
+                        removeUserVerify(verifiedUser.socketId);
+                    }
                     return res.status(200).send({
                         message:"User Verified"
                     })
@@ -62,13 +77,13 @@ const verifyUser = (req: Request, res: Response, next: NextFunction) =>{
 }
 
 const slotUploader = (req: Request, res: Response, next: NextFunction) => {
-    const {slots} = req.body;
+    const {Slots} = req.body;
 
-    if(slots.length===0){
+    if(Slots.length===0){
         return res.status(401).send({message:"No Slots are free"})
     }
 
-    slotMapper(slots,req,res,next);
+    slotMapper(Slots,req,res,next);
 }
 
 const sendEmailLink = async(req: Request, res: Response, next: NextFunction) =>{
@@ -259,8 +274,12 @@ const register = async(req: Request, res: Response, next: NextFunction) =>{
 
 const updateUser = async(req: Request, res: Response, next: NextFunction) =>{
     logging.info(NAMESPACE,`Update User Route Called`);
+    let body = req.body;
     let id = res.locals.jwt.id;
-    let user = await User.findOneAndUpdate({"_id":id},req.body);
+    if(body['_id']){
+        delete body['_id'];
+    }
+    let user = await User.findOneAndUpdate({"_id":id},body);
     if(!user){
         return res.status(404).send({err:true,message:"User not found"})
     }
@@ -294,7 +313,7 @@ const getProfile = async(req: Request, res: Response, next: NextFunction) =>{
 
 const getUser = async(req: Request, res: Response, next: NextFunction) =>{
     logging.info(NAMESPACE,`Get User Route Called`);
-    let {id} = req.body;
+    let id = req.query.id;
     let user = await User.findOne({"_id":id})
     .select("-password")
     .catch((err:any) =>{

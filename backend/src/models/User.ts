@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-const userSchema: Schema = new Schema({
+const UserSchema: Schema = new Schema({
     name:{
         type: String,
         trim: true,
@@ -59,12 +59,12 @@ const userSchema: Schema = new Schema({
     userImage:{
         type:String,
         default:""
-    },
+    }
 },
 {
     timestamps:true
 })
 
-var userModel = mongoose.model('Users', userSchema);
+var userModel = mongoose.model('Users', UserSchema);
 
 export default userModel;
