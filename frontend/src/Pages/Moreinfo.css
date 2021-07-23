@@ -34,14 +34,14 @@ textarea:focus {
 }
 
 
-.loginbutton{
+.moreinfobutton{
     color:white !important;
-    background-color: #ED3B9D;
-    margin-top:150px;
-    margin-bottom:150px;
+    background-color: #ED3B9D !important;
+    margin-top:70px;
+    margin-bottom:100px;
     width: 300px;
     height:60px;
-    margin-left:500px;
+   
     border-radius: 10px;
 }
 

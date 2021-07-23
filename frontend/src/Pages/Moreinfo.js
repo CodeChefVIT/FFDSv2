@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import './Login.css';
+import '../components/Login.css';
 import './Moreinfo.css';
 
  function Moreinfo() {
@@ -41,13 +41,11 @@ import './Moreinfo.css';
               onChange={(e) => setPassword(e.target.value)}
             />
           </Form.Group>
-          <div
-          className="col-lg-6 col-sm-12"
-          style={{ padding: "50px 0px  50px 100px" }}>
-          <Button className= "loginbutton" block size="lg" type="submit" disabled={!validateForm()}>
-            submit
+          
+          <Button className="moreinfobutton" block size="lg" type="submit" disabled={!validateForm()}>
+            Submit
           </Button>
-          </div>
+          
         </Form>
       </div>
       </>

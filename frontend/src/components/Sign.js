@@ -32,8 +32,8 @@ import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
       <>
       <div className="message">
         <div className="holla">
-        <h3>HOLLA!<br/>
-        welcome to ffds
+        <h3>HOLA!<br/>
+        Welcome to FFDS
 
         </h3>
         </div>
@@ -52,12 +52,10 @@ import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
             />
           </Form.Group>
           <Form.Group size="lg" controlId="password">
-            <Form.Label>Password</Form.Label><Button className="btns" onClick={() => setShowpassword(!showpassword)}>
-          {showpassword
-          ? <VisibilityIcon style={{color: ""}} />
-          : <VisibilityOffIcon style={{color: ""}}/>
+            <Form.Label>Password</Form.Label> {showpassword
+          ? <VisibilityIcon className="passicon_sign" style={{color: ""}} onClick={() => setShowpassword(!showpassword)} />
+          : <VisibilityOffIcon className="passicon_sign" style={{color: ""}}  onClick={() => setShowpassword(!showpassword)} />
           }
-        </Button>
             <Form.Control className="input"
               type="password"
               value={password}
@@ -65,19 +63,18 @@ import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
             />
           </Form.Group>
           <Form.Group size="lg" controlId="password">
-            <Form.Label> confirm Password</Form.Label><Button className="btnss" onClick={() => setShowpassword(!showpassword)}>
-          {showpassword
-          ? <VisibilityIcon style={{color: ""}} />
-          : <VisibilityOffIcon style={{color: ""}}/>
+            <Form.Label> Confirm Password</Form.Label>  {showpassword
+          ? <VisibilityIcon className="confpassicon_sign" style={{color: ""}} onClick={() => setShowpassword(!showpassword)} />
+          : <VisibilityOffIcon className="confpassicon_sign" style={{color: ""}}  onClick={() => setShowpassword(!showpassword)} />
           }
-        </Button>
+        
             <Form.Control className="input"
               type="password"
               value={confirmpassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </Form.Group>
-          <Button className="loginbutton" block size="lg" type="submit"  disabled={!validateForm()}>
+          <Button className="signupbutton" block size="lg" type="submit"  disabled={!validateForm()}>
             Signup
           </Button>
         </Form>

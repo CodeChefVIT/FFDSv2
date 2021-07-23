@@ -75,11 +75,14 @@ textarea:focus {
     padding-bottom: 30px;
     color:#991274;
 }
-.btnsss {
+.passicon {
     color:#FE0074 !important;
     background-color: transparent !important;
     border-color: transparent !important;
     position: relative;
-    left: 170px;
-    top:60px;
+    left: 200px;
+    top:55px;
+  }
+  .loginimg{
+      padding-top:150px;
   }

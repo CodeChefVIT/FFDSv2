@@ -5,7 +5,7 @@
 
 }
 
-.loginbutton{
+.signupbutton{
 
     margin-top:30px;
     width:150px;
@@ -15,19 +15,19 @@
 .holla{
     color:#FE0074;
 }
-.btns {
+.passicon_sign {
     color:#FE0074 !important;
     background-color: transparent !important;
     border-color: transparent !important;
     position: relative;
-    left: 180px;
-    top:40px;
+    left: 200px;
+    top:35px;
   }
-  .btnss {
+  .confpassicon_sign {
       color:#FE0074 !important;
     background-color: transparent !important;
     border-color: transparent !important;
     position: relative;
-    left: 130px;
-    top:40px;
+    left: 145px;
+    top:35px;
   }

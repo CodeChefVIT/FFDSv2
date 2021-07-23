@@ -24,6 +24,9 @@ function Login() {
 
     return (
         <>
+        <div className="row m-0">
+        <div className="col-7 px-0" >
+
         <div className="message">
         <h3 >Hey!<br/>Welcome Back</h3>
             
@@ -34,6 +37,7 @@ function Login() {
         
 
 
+        
         <div className="Login">
             <Form onSubmit={handleSubmit}>
                 <Form.Group size="lg" controlId="email">
@@ -46,12 +50,13 @@ function Login() {
                     />
                 </Form.Group>
                 <Form.Group size="lg" controlId="password">
-                    <Form.Label style={{ padding: "0px 0px 20px 0px" }}>Password:</Form.Label> <Button className="btnsss" onClick={() => setShowpassword(!showpassword)}>
+                    <Form.Label style={{ padding: "0px 0px 20px 0px" }}>Password:</Form.Label> 
+                     
           {showpassword
-          ? <VisibilityIcon style={{color: ""}} />
-          : <VisibilityOffIcon style={{color: ""}}/>
+          ? <VisibilityIcon className="passicon" style={{color: ""}} onClick={() => setShowpassword(!showpassword)} />
+          : <VisibilityOffIcon className="passicon" style={{color: ""}}  onClick={() => setShowpassword(!showpassword)} />
           }
-        </Button>
+        
                     <Form.Control className="input"
                         type="password"
                         value={password}
@@ -66,6 +71,12 @@ function Login() {
                     Login
                 </Button>
             </Form>
+        </div>
+        </div>
+
+        <div className="col-4 loginimg " >
+        <img  className="img-fluid "src="images/date.svg" alt ="blah" /> 
+        </div>
         </div>
         </>
 
