@@ -4,7 +4,7 @@ function Footer(){
     return(
       <div className="row">
         <div className="footer col-lg-6">
-        <h1> ~Made with Love by Codechef-VIT</h1>
+        <h3> ~Made with Love by Codechef-VIT</h3>
         </div>
         
         
@@ -12,7 +12,7 @@ function Footer(){
          
      
           <div class="social-icons col-lg-6">
-          <h1>Follow us on</h1>
+          <h3>Follow us on</h3>
             <a href="/#"><img src="images/facebookfigma.png " alt ="blah" /></a>
            
             <a href="https://www.instagram.com/codechefvit//"><img src="images/instafigma.png" alt="blah" /></a>

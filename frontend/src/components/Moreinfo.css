@@ -1,0 +1,37 @@
+.moreinfo{
+    /* padding-left: 100px; */
+    color: #991274;
+    background-color: black;
+    border: 0px;
+    border-bottom: 5px;
+    outline: 0px;
+
+}
+
+.input{
+    border: 0px !important;
+    border-bottom: 2px solid #991274 !important;
+    margin-bottom: 40px;
+    width: 300px;
+}
+
+.input:hover {
+    outline: 0px;
+    border: 0px;
+}
+
+input:focus { 
+    outline: none !important;
+}
+textarea:focus { 
+    outline: none !important;
+}
+
+
+.loginbutton{
+
+    margin-top: 30px;
+    width: 150px;
+    border-radius: 10px;
+}
+

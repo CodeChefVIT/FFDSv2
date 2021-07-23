@@ -5,10 +5,10 @@
 .QNA{
     font-size:4em;
     padding-bottom:20px;
-    padding-top:5px;
+    padding-top:10px;
     color:white;
 }
-h3{
-    color:white;
+.question> h5{
+    color:white !important;
     padding:10px;
 }

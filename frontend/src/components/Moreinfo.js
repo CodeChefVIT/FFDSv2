@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import './Login.css';
+import './Moreinfo.css';
 
  function Moreinfo() {
     const [email, setEmail] = useState("");
@@ -38,7 +39,7 @@ import './Login.css';
             />
           </Form.Group>
           <Button className= "loginbutton" block size="lg" type="submit" disabled={!validateForm()}>
-            Login
+            submit
           </Button>
         </Form>
       </div>
@@ -46,4 +47,5 @@ import './Login.css';
     );
   }
   export default Moreinfo;
+ 
  

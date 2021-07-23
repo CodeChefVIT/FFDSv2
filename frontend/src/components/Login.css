@@ -40,8 +40,8 @@
 .input{
     border: 0px !important;
     border-bottom: 2px solid #991274 !important;
-    margin-bottom: 40px;
-    width: 300px;
+    margin-bottom: 40px !important;
+    width: 300px !important;
 }
 
 .input:hover {

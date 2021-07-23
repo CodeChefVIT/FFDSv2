@@ -26,6 +26,14 @@ import './Sign.css';
     }
   
     return (
+      <>
+      <div>
+        <h3>HOLLA!<br/>
+        welcome to ffds
+
+        </h3>
+        <h4>Please enter the required fields:</h4>
+      </div>
       
       <div className="signup">
         <Form onSubmit={handleSubmit}>
@@ -59,6 +67,7 @@ import './Sign.css';
           </Button>
         </Form>
       </div>
+      </>
     );
   }
   export default Signup;
