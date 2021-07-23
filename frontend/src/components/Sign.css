@@ -10,5 +10,24 @@
     margin-top:30px;
     width:150px;
     border-radius: 10px;
-    /* background-color:#991274; */
+    background-color:#ED3B9D !important;
 }
+.holla{
+    color:#FE0074;
+}
+.btns {
+    color:#FE0074 !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+    position: relative;
+    left: 180px;
+    top:40px;
+  }
+  .btnss {
+      color:#FE0074 !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+    position: relative;
+    left: 130px;
+    top:40px;
+  }

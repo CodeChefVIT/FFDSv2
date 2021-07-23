@@ -2,9 +2,10 @@ import { useState } from "react";
 import Login from "../components/Login";
 import Signup from "../components/Sign.js";
 import Moreinfo from "../components/Moreinfo.js";
+import './Account.css';
 
 function Account(props) {
-  const [loggedin, setLoggedin] = useState(false);
+  const [loggedin] = useState(true);
 
   return (
     <>

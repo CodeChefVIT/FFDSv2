@@ -17,9 +17,12 @@ import './Moreinfo.css';
     }
   
     return (
-     
-     
+     <>
+     <div className="infomsg">
+      <h3> Tell us about you</h3>
+      </div>
       <div className="moreinfo">
+        
         <Form onSubmit={handleSubmit}>
           <Form.Group size="lg" controlId="email">
             <Form.Label style={{ padding:"0px 0px 20px 0px" }}>Enter your full name*</Form.Label>
@@ -38,11 +41,16 @@ import './Moreinfo.css';
               onChange={(e) => setPassword(e.target.value)}
             />
           </Form.Group>
+          <div
+          className="col-lg-6 col-sm-12"
+          style={{ padding: "50px 0px  50px 100px" }}>
           <Button className= "loginbutton" block size="lg" type="submit" disabled={!validateForm()}>
             submit
           </Button>
+          </div>
         </Form>
       </div>
+      </>
      
     );
   }

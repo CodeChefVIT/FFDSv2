@@ -13,7 +13,7 @@
 }
  .social-icons img{
     
- 
+
 height:50px;
 width:50px;
  margin-right:100px; 
@@ -23,4 +23,7 @@ width:50px;
     padding-left:200px;
     position:relative;
     /* float:right ; */
+}
+.cl >h4{
+    color:white !important;
 }
