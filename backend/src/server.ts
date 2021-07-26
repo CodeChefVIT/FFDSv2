@@ -6,6 +6,10 @@ import User from './models/User'
 import logging from './config/logging';
 import config from './config/config';
 import userRoutes from './routes/user';
+import conversationRoutes from './routes/conversation';
+import messageRoutes from './routes/message';
+require('./controllers/user');
+
 const NAMESPACE = 'Server';
 const app = express();
 
@@ -48,6 +52,8 @@ app.use((req,res,next) => {
 
 // Routes
 app.use('/user', userRoutes);
+app.use('/conversation', conversationRoutes);
+app.use('/message', messageRoutes);
 
 // Error Handling
 app.use((req, res, next) => {
@@ -72,7 +78,73 @@ try{
 
 // Server Creation
 const httpServer = http.createServer(app);
+let io = require('./socket/socket').initialize(httpServer);
+
+app.locals.io = io
+let users : any[] = [];
+let usersToVerify : any[] = [];
+
+app.locals.users = usersToVerify;
+
+const addUser = (userId:String,socketId:String) =>{
+    !users.some(user=> user.userId === userId) &&
+        users.push({userId,socketId});
+}
+
+const removeUser = (socketId:String) =>{
+    users = users.filter(user=>user.socketId !== socketId)
+}
+
+const getUser = (userId:String) => {
+    return users.find((user) => user.userId === userId);
+  };
+
+const addUserVerify = (email:String,socketId:String) =>{
+    !app.locals.users.some((user:any)=> user.email === email) &&
+        app.locals.users.push({email,socketId});
+}
+
+const removeUserVerify = (socketId:String) =>{
+    app.locals.users = app.locals.users.filter((user:any)=>user.socketId !== socketId)
+}
+
+
+
+io.on("connection",(socket:any)=>{
+    logging.info(NAMESPACE,"Connection established");
+
+    socket.on('addUser',(userId:String)=>{
+        logging.info(NAMESPACE,"User Socket Initialized",{users});
+        addUser(userId, socket.id)
+        io.emit("getUsers",users)
+    })
+
+    socket.on('looking',(email:String)=>{
+        addUserVerify(email, socket.id)
+    })
+
+    socket.on("sendMessage", (senderId:String, receiverId:String, text:String, createdAt:Date) => {
+        logging.info(NAMESPACE,"Sending a Message",{senderId,receiverId,text,createdAt});
+        const user = getUser(receiverId);
+        io.to(user.socketId).emit("getMessage", {
+          senderId,
+          text,
+          createdAt
+        });
+      });
+
+    socket.on("disconnect",()=>{
+        logging.info(NAMESPACE,"A User Disconnected");
+        removeUser(socket.id);
+        removeUserVerify(socket.id);
+        io.emit("getUsers",users)
+    })
+})
+
+
 httpServer.listen(config.server.port, ()=>{
-    logging.info(NAMESPACE, `Server running on ${config.server.hostname}:${config.server.port}`);
+    logging.info(NAMESPACE, `Server running on http://${config.server.hostname}:${config.server.port}/`);
     
 })
+
+
