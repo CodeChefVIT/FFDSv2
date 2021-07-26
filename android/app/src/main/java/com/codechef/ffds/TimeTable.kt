@@ -2,38 +2,54 @@ package com.codechef.ffds
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Base64.DEFAULT
+import android.util.Base64.encodeToString
+import android.util.Log
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import com.codechef.ffds.databinding.ActivityTimeTableBinding
+import java.io.ByteArrayOutputStream
 import java.io.Serializable
 import java.util.*
 
 
 class TimeTable : AppCompatActivity() {
 
-    /*companion object {
-        private val tableMap = Slots().getSlots()
-    }*/
+    private var tableMap = ArrayList<ArrayList<HashMap<String, Any>>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityTimeTableBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val bundle = intent.getBundleExtra("bundle")
-        val tableMap = bundle?.getSerializable("tableMap") as ArrayList<ArrayList<HashMap<String, Boolean>>>
-        val viewModel = ViewModelProvider(this, UserViewModelFactory(application)).get(UserViewModel::class.java)
+        tableMap = Slots().getSlots()
+        Log.d("SLOTS", tableMap.toString())
+
         val resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
                 if (result.resultCode == Activity.RESULT_OK) {
                     val data = result.data
-                    val imageUri = data?.data
+                    val imageURI = data?.data
+                    val bitmap = if (android.os.Build.VERSION.SDK_INT >= 29)
+                        ImageDecoder.decodeBitmap(
+                            ImageDecoder.createSource(
+                                contentResolver,
+                                imageURI!!
+                            )
+                        )
+                    else
+                        MediaStore.Images.Media.getBitmap(contentResolver, imageURI)
+                    val stream = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                    encodeToString(stream.toByteArray(), DEFAULT)
                 }
 
             }
@@ -55,10 +71,6 @@ class TimeTable : AppCompatActivity() {
                 intent.putExtra("bundle", args)
                 setResult(RESULT_OK, intent)
                 finish()
-                /*viewModel.getUserData().observe(this@TimeTable) { user ->
-                    viewModel.update(user.copy(slot = tableMap))
-                }
-                startActivity(Intent(this@TimeTable, MainActivity::class.java))*/
             }
 
             for (i in 0..6) {
@@ -72,16 +84,17 @@ class TimeTable : AppCompatActivity() {
                 for (j in 0..13) {
                     val itemView1 = layoutInflater.inflate(R.layout.item_time_table, null)
                     val item1 = itemView1.findViewById<TextView>(R.id.text)
-                    item1.text = tableMap[i][j].keys.elementAt(0)
+                    item1.text = tableMap[i][j]["name"].toString()
                     if (item1.text != "LUNCH") {
                         item1.setOnClickListener {
-                            tableMap[i][j][item1.text.toString()] = !tableMap[i][j][item1.text]!!
-                            if (tableMap[i][j][item1.text] == true)
+                            val free = tableMap[i][j]["free"] as Boolean
+                            tableMap[i][j]["free"] = !free
+                            if (tableMap[i][j]["free"] == true)
                                 itemView1.setBackgroundResource(R.drawable.free_slot_background)
                             else
                                 itemView1.setBackgroundResource(R.drawable.occupied_slot_background)
                         }
-                        if (tableMap[i][j][item1.text] == true)
+                        if (tableMap[i][j]["free"] == true)
                             itemView1.setBackgroundResource(R.drawable.free_slot_background)
                         else
                             itemView1.setBackgroundResource(R.drawable.occupied_slot_background)

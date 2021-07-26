@@ -15,17 +15,31 @@
         android:background="@color/colorPrimary"
         app:mode="normal">
 
-        <ImageView
-            android:id="@+id/reject"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/reject_icon" />
+            android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/accept"
+            <ImageView
+                android:id="@+id/reject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="100dp"
+                android:src="@drawable/reject_icon" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/cupid_icon" />
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/accept"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="100dp"
+                android:src="@drawable/cupid_icon" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

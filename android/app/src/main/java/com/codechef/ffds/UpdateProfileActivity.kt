@@ -17,8 +17,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.codechef.ffds.databinding.UpdateProfileActivityBinding
+import com.cunoraz.tagview.Tag
 import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.MediaType
 import okhttp3.RequestBody
@@ -36,6 +38,8 @@ class UpdateProfileActivity : AppCompatActivity() {
     lateinit var viewModel: UserViewModel
     var user = Profile()
     private val tags = ArrayList<String>()
+    private var image = ""
+    private var imageArray = byteArrayOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,8 +68,11 @@ class UpdateProfileActivity : AppCompatActivity() {
                     else
                         MediaStore.Images.Media.getBitmap(contentResolver, imageURI)
                     binding.dp.setImageBitmap(bitmap)
-                    val path = saveToInternalStorage(bitmap)
-                    viewModel.update(user.copy(imagePath = path!!))
+                    val stream = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                    imageArray = stream.toByteArray()
+                    Log.d("myTag", imageURI.toString())
+                    //image = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
                 }
 
             }
@@ -76,8 +83,7 @@ class UpdateProfileActivity : AppCompatActivity() {
                     val data = result.data
                     val args = data?.getBundleExtra("bundle")
                     user =
-                        user.copy(slot = args?.getSerializable("tableMap") as java.util.ArrayList<java.util.ArrayList<HashMap<String, Boolean>>>)
-                    Log.d("myTag", user.slot.toString())
+                        user.copy(slot = args?.getSerializable("tableMap") as java.util.ArrayList<java.util.ArrayList<HashMap<String, Any>>>)
                 }
 
             }
@@ -91,22 +97,17 @@ class UpdateProfileActivity : AppCompatActivity() {
                 resultLauncher.launch(Intent.createChooser(gallery, "Select profile photo"))
             }
 
-
             add.setOnClickListener {
                 handleTags(tags)
             }
 
-            tagView.setOnTagClickListener { _, tag, _ ->
-                tags.remove(tag)
-                tagView.setTags(tags)
+            tagView2.setOnTagDeleteListener { _, tag, position ->
+                tags.remove(tag.text)
+                tagView2.remove(position)
             }
 
             uploadTimeTable.setOnClickListener {
                 val intent = Intent(this@UpdateProfileActivity, TimeTable::class.java)
-                val bundle = Bundle()
-                val tableMap = if (user.slot.isEmpty()) Slots().getSlots() else user.slot
-                bundle.putSerializable("tableMap", tableMap as Serializable)
-                intent.putExtra("bundle", bundle)
                 resultLauncher2.launch(intent)
             }
 
@@ -116,7 +117,9 @@ class UpdateProfileActivity : AppCompatActivity() {
                         bio = bio.text.toString().trim(),
                         name = yourName.text.toString().trim(),
                         phone = phoneNoEdit.text.toString(),
-                        expectations = tagView.tags.asList()
+                        expectations = tags,
+                        userImage = image,
+                        userArray = imageArray,
                     )
                 )
             }
@@ -164,12 +167,14 @@ class UpdateProfileActivity : AppCompatActivity() {
                 bio.setText(user.bio)
                 yourName.setText(user.name)
                 phoneNoEdit.text = user.phone
-                tagView.setTags(user.expectations)
-                try {
-                    dp.setImageBitmap(loadImageFromStorage(user.imagePath))
-                } catch (e: FileNotFoundException) {
-                    e.printStackTrace()
+                tagView2.setTagMargin(10f)
+                tagView2.setTextPaddingTop(2f)
+                tagView2.settextPaddingBottom(2f)
+                for (tag in tags) {
+                    tagView2.addTag(getNewTag(tag))
                 }
+                val bitmap = BitmapFactory.decodeByteArray(user.userArray, 0, user.userArray.size)
+                dp.setImageBitmap(bitmap)
             }
         }
     }
@@ -179,6 +184,7 @@ class UpdateProfileActivity : AppCompatActivity() {
             val tag = addTags.text.toString().trim()
             if (tag.isNotEmpty()) {
                 if (!tags.contains(tag)) {
+                    tagView2.addTag(getNewTag(tag))
                     tags.add(tag)
                 } else
                     Toast.makeText(
@@ -187,7 +193,6 @@ class UpdateProfileActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
             }
-            tagView.setTags(tags)
             addTags.text = null
         }
     }
@@ -210,6 +215,15 @@ class UpdateProfileActivity : AppCompatActivity() {
             }
         }
         return directory.absolutePath
+    }
+
+    private fun getNewTag(text: String): Tag {
+        val tag = Tag(text)
+        tag.isDeletable = true
+        tag.layoutColor =
+            ContextCompat.getColor(this, R.color.colorPrimary)
+
+        return tag
     }
 
     @Throws(FileNotFoundException::class)

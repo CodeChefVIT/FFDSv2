@@ -111,16 +111,11 @@
             android:textColor="@color/colorPrimary"
             android:textSize="16sp" />
 
-
-        <com.aotasoft.taggroup.TagGroup
-            android:id="@+id/tagView"
+        <com.cunoraz.tagview.TagView
+            android:id="@+id/tagView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            app:atg_backgroundColor="@color/colorPrimary"
-            app:atg_borderColor="@color/colorPrimary"
-            app:atg_textColor="#fff"
-            app:atg_textSize="12sp" />
+            android:layout_marginTop="10dp" />
 
     </LinearLayout>
 

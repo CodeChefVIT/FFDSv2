@@ -139,15 +139,11 @@
 
             </RelativeLayout>
 
-            <com.aotasoft.taggroup.TagGroup
-                android:id="@+id/tagView"
+            <com.cunoraz.tagview.TagView
+                android:id="@+id/tagView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                app:atg_backgroundColor="@color/colorPrimary"
-                app:atg_borderColor="@color/colorPrimary"
-                app:atg_textColor="@android:color/white"
-                app:atg_textSize="12sp" />
+                android:layout_marginTop="10dp" />
 
             <Button
                 android:id="@+id/uploadTimeTable"
