@@ -39,7 +39,8 @@ const getLastMessage = async(req: Request, res: Response, next: NextFunction) =>
         const message = await Message.findOne({
           conversationId: req.params.conversationId,
         }).sort({_id:-1});
-        if(message!){
+        console.log(message)
+        if(!message){
           return res.status(404).send({
             "message":"No messages found"
           })
