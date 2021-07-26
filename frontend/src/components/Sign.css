@@ -1,0 +1,33 @@
+.signup{
+    padding-left:100px;
+
+    color:#991274;
+
+}
+
+.signupbutton{
+
+    margin-top:30px;
+    width:150px;
+    border-radius: 10px;
+    background-color:#ED3B9D !important;
+}
+.holla{
+    color:#FE0074;
+}
+.passicon_sign {
+    color:#FE0074 !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+    position: relative;
+    left: 200px;
+    top:35px;
+  }
+  .confpassicon_sign {
+      color:#FE0074 !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+    position: relative;
+    left: 145px;
+    top:35px;
+  }
