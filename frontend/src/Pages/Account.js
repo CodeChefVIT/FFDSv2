@@ -1,19 +1,12 @@
-
 import Login from "../components/Login";
 import Signup from "../components/Sign.js";
 
-import './Account.css';
+import "./Account.css";
 
 function Account(props) {
- 
   return (
     <>
-      
-     {props.switch ? (
-        <Login></Login>
-      ) : (
-        <Signup></Signup>
-      )}
+      {props.switch ? <Login></Login> : <Signup></Signup>}
 
       <div className="loginmessage">
         <div
@@ -30,7 +23,7 @@ function Account(props) {
         </div>
       </div>
     </>
-);
+  );
 }
 
 export default Account;

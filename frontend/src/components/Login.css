@@ -59,12 +59,10 @@ textarea:focus {
 
 
 .loginbutton{
-    color:#FE0074 !important;
-    
-
-    margin-top: 30px;
-    width: 150px;
+    margin-top:30px;
+    width:150px;
     border-radius: 10px;
+    background-color:#ED3B9D !important;
 }
 .message{
     padding-left: 100px;
