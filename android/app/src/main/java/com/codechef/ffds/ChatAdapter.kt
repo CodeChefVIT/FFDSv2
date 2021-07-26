@@ -38,7 +38,6 @@ class ChatAdapter : ListAdapter<Chat, RecyclerView.ViewHolder>(DiffCallback()) {
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
         val currentItem = getItem(position)
         when (holder.javaClass) {
             ReceivedViewHolder::class.java -> {

@@ -1,5 +1,6 @@
 package com.codechef.ffds
 
+import android.content.res.Resources
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.RequestBody
@@ -9,12 +10,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
-val gson: Gson = GsonBuilder()
-    .excludeFieldsWithoutExposeAnnotation()
-    .create()
-
 val retrofit: Retrofit = Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
-    .baseUrl("https://ffds-backend.azurewebsites.net/").build()
+    .baseUrl("https://ffds-backend.herokuapp.com/").build()
 
 val retrofitForSlots: Retrofit =
     Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())

@@ -6,4 +6,9 @@
     <string name="logo">Logo</string>
     <string name="feed">Feed</string>
     <string name="no_matches_found">No matches found :(</string>
+    <string name="no_matches">You don\'t have any new matches.</string>
+    <string name="no_messages">You don\'t have any messages yet.\nSend your match a message.</string>
+    <string name="messages">Messages</string>
+    <string name="name">Name</string>
+    <string name="baseUrl">https://ffds-backend.herokuapp.com/</string>
 </resources>

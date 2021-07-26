@@ -12,10 +12,10 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 class MessageAdapter internal constructor(
     private val context: Context,
-    private val matches: ArrayList<Messages>
-) : ListAdapter<Messages, MessageAdapter.ViewHolder>(DiffCallback()) {
+    private val arrayList: ArrayList<Messages>
+) : ListAdapter<Messages, RecyclerView.ViewHolder>(DiffCallback()) {
 
-    lateinit var mListener: OnItemClickListener
+    private lateinit var mListener: OnItemClickListener
 
     interface OnItemClickListener {
         fun onItemClick(position: Int)
@@ -25,23 +25,56 @@ class MessageAdapter internal constructor(
         mListener = listener
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View =
-            LayoutInflater.from(context).inflate(R.layout.messages_adapter_item, parent, false)
-        return ViewHolder(view, mListener)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val currentItem = getItem(viewType)
+        return when (currentItem.lastMessage) {
+            "" -> {
+                val view =
+                    LayoutInflater.from(context).inflate(R.layout.match_adapter_item, parent, false)
+                MatchViewHolder(view, mListener)
+            }
+            else -> {
+                val view = LayoutInflater.from(context)
+                    .inflate(R.layout.messages_adapter_item, parent, false)
+                MessageViewHolder(view, mListener)
+            }
+        }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.dp.setImageResource(matches[position].profileImage)
-        holder.last.text = matches[position].lastMessage
-        holder.name.text = matches[position].name
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder.javaClass) {
+            MatchViewHolder::class.java -> {
+                val viewHolder = holder as MatchViewHolder
+                viewHolder.dp.setImageResource(arrayList[position].profileImage)
+            }
+            MessageViewHolder::class.java -> {
+                val viewHolder = holder as MessageViewHolder
+                viewHolder.dp.setImageResource(arrayList[position].profileImage)
+                viewHolder.last.text = arrayList[position].lastMessage
+                viewHolder.name.text = arrayList[position].name
+            }
+        }
+
     }
 
     override fun getItemCount(): Int {
-        return matches.size
+        return arrayList.size
     }
 
-    class ViewHolder constructor(itemView: View, listener: OnItemClickListener) :
+    class MatchViewHolder constructor(itemView: View, listener: OnItemClickListener) :
+        RecyclerView.ViewHolder(itemView) {
+        var dp: CircleImageView = itemView.findViewById(R.id.match_dp)
+
+        init {
+            itemView.setOnClickListener {
+                val pos = absoluteAdapterPosition
+                if (pos != RecyclerView.NO_POSITION)
+                    listener.onItemClick(pos)
+            }
+        }
+    }
+
+    class MessageViewHolder constructor(itemView: View, listener: OnItemClickListener) :
         RecyclerView.ViewHolder(itemView) {
         var dp: CircleImageView = itemView.findViewById(R.id.dp)
         var name: TextView = itemView.findViewById(R.id.name)
@@ -56,6 +89,8 @@ class MessageAdapter internal constructor(
         }
 
     }
+
+    override fun getItemViewType(position: Int) = position
 
     class DiffCallback : DiffUtil.ItemCallback<Messages>() {
         override fun areItemsTheSame(oldItem: Messages, newItem: Messages) =

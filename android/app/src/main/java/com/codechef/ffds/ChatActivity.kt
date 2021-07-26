@@ -2,6 +2,7 @@ package com.codechef.ffds
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -43,7 +44,7 @@ class ChatActivity : AppCompatActivity() {
 
     init {
         try {
-            mSocket = IO.socket("https://ffds-backend.azurewebsites.net/")
+            mSocket = IO.socket("https://ffds-backend.herokuapp.com/")
         } catch (e: URISyntaxException) {
         }
     }
@@ -89,7 +90,6 @@ class ChatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         mSocket.connect()
         mSocket.on(getMessage, onNewMessage)
 
@@ -107,7 +107,8 @@ class ChatActivity : AppCompatActivity() {
 
         val bundle = intent.extras
         val name = bundle?.getString("Name")
-        receiverId = bundle?.getString("id")!!
+        receiverId = bundle?.getString("ID")!!
+        conversationId = bundle.getString("ConversationId")!!
 
         val layoutManager = LinearLayoutManager(this)
         layoutManager.stackFromEnd = true
@@ -151,68 +152,46 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun getData() {
-        Api.retrofitService.getSpecificConversation(authToken, receiverId)!!
-            .enqueue(object : Callback<Conversation?> {
-                override fun onFailure(call: Call<Conversation?>, t: Throwable) {
-                    Toast.makeText(baseContext, "CONVO: ${t.message}", Toast.LENGTH_SHORT).show()
+
+        Api.retrofitService.getAllMessages(
+            authToken,
+            conversationId = conversationId
+        )!!
+            .enqueue(object : Callback<ArrayList<Chat>?> {
+                override fun onFailure(call: Call<ArrayList<Chat>?>, t: Throwable) {
+                    Toast.makeText(
+                        baseContext,
+                        "MSG: ${t.message}",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
                 }
 
                 override fun onResponse(
-                    call: Call<Conversation?>,
-                    response: Response<Conversation?>
+                    call: Call<ArrayList<Chat>?>,
+                    response: Response<ArrayList<Chat>?>
                 ) {
                     if (response.message() == "OK") {
-                        conversationId = response.body()?._id.toString()
-                        Api.retrofitService.getAllMessages(
-                            authToken,
-                            conversationId = conversationId
-                        )!!
-                            .enqueue(object : Callback<ArrayList<Chat>?> {
-                                override fun onFailure(call: Call<ArrayList<Chat>?>, t: Throwable) {
-                                    Toast.makeText(
-                                        baseContext,
-                                        "MSG: ${t.message}",
-                                        Toast.LENGTH_SHORT
-                                    )
-                                        .show()
-                                }
-
-                                override fun onResponse(
-                                    call: Call<ArrayList<Chat>?>,
-                                    response: Response<ArrayList<Chat>?>
-                                ) {
-                                    if (response.message() == "OK") {
-                                        Toast.makeText(
-                                            baseContext,
-                                            "All messages success",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        val list = response.body()
-                                        if (list != null) {
-                                            chats.clear()
-                                            for (chat in list) {
-                                                addDate(chat.createdAt.time)
-                                                chats.add(chat.copy(type = getType(chat)))
-                                            }
-                                            chatAdapter.submitList(chats)
-                                        }
-                                    } else
-                                        Toast.makeText(
-                                            baseContext,
-                                            "MESSAGES: ${response.message()}",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                }
-                            })
+                        binding.progressBar.visibility = View.GONE
+                        val list = response.body()
+                        if (list != null) {
+                            chats.clear()
+                            for (chat in list) {
+                                addDate(chat.createdAt.time)
+                                chats.add(chat.copy(type = getType(chat)))
+                            }
+                            chatAdapter.submitList(chats)
+                        }
                     } else
                         Toast.makeText(
                             baseContext,
-                            "CONVERSATION: ${response.message()}",
+                            "MESSAGES: ${response.message()}",
                             Toast.LENGTH_SHORT
                         ).show()
                 }
-
             })
+
+
     }
 
     private fun addDate(timestamp: Long) {

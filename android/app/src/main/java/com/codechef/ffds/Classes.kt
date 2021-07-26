@@ -1,5 +1,6 @@
 package com.codechef.ffds
 
+import android.content.res.Resources
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
@@ -65,7 +66,8 @@ data class Messages(
     val lastMessage: String,
     val profileImage: Int,
     val name: String,
-    val id: String
+    val id: String,
+    val conversationId: String
 )
 
 data class Conversation(

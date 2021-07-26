@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 public class MatchFragment extends Fragment {
@@ -21,7 +23,12 @@ public class MatchFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.match_activity, container, false);
+        return inflater.inflate(R.layout.matches_fragment, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View root, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(root, savedInstanceState);
 
         matches = new ArrayList<>();
         matches.add(new User("Ishan", "axil.ishan3@gmail.com", "Traveller and a hopeless romantic "));
@@ -56,8 +63,5 @@ public class MatchFragment extends Fragment {
 
             }
         });
-
-        return root;
     }
-
 }

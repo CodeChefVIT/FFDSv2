@@ -3,7 +3,10 @@ package com.codechef.ffds;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +22,13 @@ import androidx.lifecycle.ViewModelProvider;
 import com.cunoraz.tagview.Tag;
 import com.cunoraz.tagview.TagView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -31,14 +37,19 @@ public class ProfileFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View root = inflater.inflate(R.layout.profile_activity, container, false);
+
+        return inflater.inflate(R.layout.profile_fragment, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull @NotNull View root, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
+        super.onViewCreated(root, savedInstanceState);
 
         UserViewModel viewModel = new ViewModelProvider(this, new UserViewModelFactory(requireActivity().getApplication())).get(UserViewModel.class);
 
         TextView bio = root.findViewById(R.id.bio);
         TextView name = root.findViewById(R.id.your_name);
         TextView phone = root.findViewById(R.id.phone_no);
-
 
         viewModel.getUserData().observe(getViewLifecycleOwner(), user -> {
 
@@ -64,18 +75,18 @@ public class ProfileFragment extends Fragment {
                 phone.setText(user.getPhone());
 
                 CircleImageView imageView = root.findViewById(R.id.profileImage);
-                /*byte[] image = Base64.decode(user.getUserImage().getBytes(), Base64.DEFAULT);
-                Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-                imageView.setImageBitmap(bitmap);*/
+                byte[] image = user.getUserArray();
+                Bitmap bitmap;
+                if (image.length != 0)
+                    bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                else
+                    bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.profile_image);
+                imageView.setImageBitmap(bitmap);
             }
         });
 
         Button edit = root.findViewById(R.id.edit_profile);
-        edit.setOnClickListener(v -> {
-            startActivity(new Intent(getContext(), UpdateProfileActivity.class));
-        });
-
-        return root;
+        edit.setOnClickListener(v -> startActivity(new Intent(getContext(), UpdateProfileActivity.class)));
     }
 
     private Bitmap loadImageFromStorage(String path) throws FileNotFoundException {

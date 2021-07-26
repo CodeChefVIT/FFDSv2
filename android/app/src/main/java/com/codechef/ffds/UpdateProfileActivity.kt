@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -111,6 +112,12 @@ class UpdateProfileActivity : AppCompatActivity() {
                 resultLauncher2.launch(intent)
             }
 
+            delete.setOnClickListener {
+                imageArray = byteArrayOf()
+                val bitmap = BitmapFactory.decodeResource(resources, R.drawable.profile_image)
+                dp.setImageBitmap(bitmap)
+            }
+
             saveProfile.setOnClickListener {
                 updateUser(
                     user.copy(
@@ -128,7 +135,9 @@ class UpdateProfileActivity : AppCompatActivity() {
 
     private fun updateUser(user: Profile) {
         val dialog = Dialog(this)
-        dialog.setContentView(layoutInflater.inflate(R.layout.loading_dialog, null))
+        val view = layoutInflater.inflate(R.layout.loading_dialog, null)
+        view.findViewById<TextView>(R.id.text).text = "Saving..."
+        dialog.setContentView(view)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.show()
         val om = ObjectMapper()
@@ -173,7 +182,10 @@ class UpdateProfileActivity : AppCompatActivity() {
                 for (tag in tags) {
                     tagView2.addTag(getNewTag(tag))
                 }
-                val bitmap = BitmapFactory.decodeByteArray(user.userArray, 0, user.userArray.size)
+                val bitmap = if(user.userArray.isNotEmpty())
+                    BitmapFactory.decodeByteArray(user.userArray, 0, user.userArray.size)
+                else
+                    BitmapFactory.decodeResource(resources, R.drawable.profile_image)
                 dp.setImageBitmap(bitmap)
             }
         }

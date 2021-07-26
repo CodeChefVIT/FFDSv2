@@ -35,7 +35,7 @@ class RegisterActivity1 : AppCompatActivity() {
 
     init {
         try {
-            mSocket = IO.socket("https://ffds-backend.azurewebsites.net/")
+            mSocket = IO.socket("https://ffds-backend.herokuapp.com/")
         } catch (e: URISyntaxException) {
         }
     }
@@ -65,7 +65,6 @@ class RegisterActivity1 : AppCompatActivity() {
 
         mSocket.connect()
         mSocket.on(verified, onNewMessage)
-
         viewModel = ViewModelProvider(
             this,
             UserViewModelFactory(application)
