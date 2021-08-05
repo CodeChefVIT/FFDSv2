@@ -12,7 +12,8 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 class MessageAdapter internal constructor(
     private val context: Context,
-    private val arrayList: ArrayList<Messages>
+    private val arrayList: ArrayList<Messages>,
+    private val flag: Boolean
 ) : ListAdapter<Messages, RecyclerView.ViewHolder>(DiffCallback()) {
 
     private lateinit var mListener: OnItemClickListener
@@ -26,14 +27,13 @@ class MessageAdapter internal constructor(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val currentItem = getItem(viewType)
-        return when (currentItem.lastMessage) {
-            "" -> {
+        return when (flag) {
+            false -> {
                 val view =
                     LayoutInflater.from(context).inflate(R.layout.match_adapter_item, parent, false)
                 MatchViewHolder(view, mListener)
             }
-            else -> {
+            true -> {
                 val view = LayoutInflater.from(context)
                     .inflate(R.layout.messages_adapter_item, parent, false)
                 MessageViewHolder(view, mListener)
@@ -55,10 +55,6 @@ class MessageAdapter internal constructor(
             }
         }
 
-    }
-
-    override fun getItemCount(): Int {
-        return arrayList.size
     }
 
     class MatchViewHolder constructor(itemView: View, listener: OnItemClickListener) :
@@ -90,12 +86,9 @@ class MessageAdapter internal constructor(
 
     }
 
-    override fun getItemViewType(position: Int) = position
-
     class DiffCallback : DiffUtil.ItemCallback<Messages>() {
         override fun areItemsTheSame(oldItem: Messages, newItem: Messages) =
-            //(oldItem.id == newItem.id)
-            (oldItem == newItem)
+            (oldItem.id == newItem.id)
 
         override fun areContentsTheSame(oldItem: Messages, newItem: Messages) = (oldItem == newItem)
     }

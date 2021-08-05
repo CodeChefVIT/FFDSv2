@@ -2,6 +2,7 @@ package com.codechef.ffds;
 
 import android.animation.Animator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -22,7 +23,8 @@ public class SplashScreen extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         UserViewModel viewModel = new ViewModelProvider(this, new UserViewModelFactory(getApplication())).get(UserViewModel.class);
-        viewModel.getUserData().observe(this, user -> {
+        SharedPreferences prefs = getSharedPreferences("MY PREFS", MODE_PRIVATE);
+        viewModel.getUserData(prefs.getString("id", "")).observe(this, user -> {
             if (user!= null) {
                 if (!user.getToken().isEmpty())
                     tokenPresent = true;

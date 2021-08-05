@@ -1,12 +1,12 @@
 package com.codechef.ffds;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -37,7 +36,6 @@ public class ProfileFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         return inflater.inflate(R.layout.profile_fragment, container, false);
     }
 
@@ -51,10 +49,11 @@ public class ProfileFragment extends Fragment {
         TextView name = root.findViewById(R.id.your_name);
         TextView phone = root.findViewById(R.id.phone_no);
 
-        viewModel.getUserData().observe(getViewLifecycleOwner(), user -> {
+        SharedPreferences prefs = getContext().getSharedPreferences("MY PREFS", MODE_PRIVATE);
+        viewModel.getUserData(prefs.getString("id", "")).observe(getViewLifecycleOwner(), user -> {
 
             if (user != null) {
-                ArrayList<String> tags = user.getExpectations().isEmpty() ? new ArrayList<>() : (ArrayList<String>) user.getExpectations();
+                ArrayList<String> tags = user.getExpectations().isEmpty() ? new ArrayList<>() :  user.getExpectations();
 
                 TagView tagView = root.findViewById(R.id.tagView2);
                 tagView.setTagMargin(10f);

@@ -1,19 +1,14 @@
 package com.codechef.ffds
 
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.codechef.ffds.databinding.ActivityChatBinding
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
-import okhttp3.MediaType
-import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import org.json.JSONException
 import org.json.JSONObject
@@ -32,14 +27,13 @@ class ChatActivity : AppCompatActivity() {
     private val getMessage = "getMessage"
     private val addUser = "addUser"
     private lateinit var mSocket: Socket
-    lateinit var viewModel: UserViewModel
-    var user = Profile()
-    var chats = ArrayList<Chat>()
-    val chatAdapter = ChatAdapter()
-    var conversationId = ""
-    var senderId = ""
-    var receiverId = ""
-    var authToken = ""
+    private lateinit var viewModel: UserViewModel
+    private var chats = ArrayList<Chat>()
+    private val chatAdapter = ChatAdapter()
+    private var conversationId = ""
+    private var senderId = ""
+    private var receiverId = ""
+    private var authToken = ""
     private lateinit var binding: ActivityChatBinding
 
     init {
@@ -53,7 +47,6 @@ class ChatActivity : AppCompatActivity() {
         Emitter.Listener { args ->
             runOnUiThread(Runnable {
                 val data = args[0] as JSONObject
-                Log.d("myTag", data.toString())
                 val sId: String
                 val message: String
                 val createdAt: String
@@ -67,7 +60,6 @@ class ChatActivity : AppCompatActivity() {
                             createdAt
                         )
                 } catch (e: JSONException) {
-                    Log.d("myTag", e.message!!)
                     return@Runnable
                 }
 
@@ -80,6 +72,7 @@ class ChatActivity : AppCompatActivity() {
                     updatedAt = timeStamp
                 )
                 chats.add(chat)
+                viewModel.insertAllMessages(chat)
                 chatAdapter.submitList(chats)
                 chatAdapter.notifyItemInserted(chats.size)
                 binding.recyclerView.scrollToPosition(chatAdapter.itemCount - 1)
@@ -98,7 +91,8 @@ class ChatActivity : AppCompatActivity() {
             UserViewModelFactory(application)
         ).get(UserViewModel::class.java)
 
-        viewModel.getUserData().observe(this) { user ->
+        val prefs = getSharedPreferences("MY PREFS", MODE_PRIVATE)
+        viewModel.getUserData(prefs.getString("id", "")!!).observe(this) { user ->
             senderId = user._id
             authToken = user.token
             getData()
@@ -153,6 +147,15 @@ class ChatActivity : AppCompatActivity() {
 
     private fun getData() {
 
+        viewModel.getAllMessages(conversationId).observe(this) { list ->
+            chats.clear()
+            for (chat in list) {
+                addDate(chat.createdAt.time)
+                chats.add(chat.copy(type = getType(chat)))
+            }
+            chatAdapter.submitList(chats)
+        }
+
         Api.retrofitService.getAllMessages(
             authToken,
             conversationId = conversationId
@@ -172,15 +175,13 @@ class ChatActivity : AppCompatActivity() {
                     response: Response<ArrayList<Chat>?>
                 ) {
                     if (response.message() == "OK") {
-                        binding.progressBar.visibility = View.GONE
                         val list = response.body()
+                        val chats = ArrayList<Chat>()
                         if (list != null) {
-                            chats.clear()
-                            for (chat in list) {
-                                addDate(chat.createdAt.time)
+                            for (chat in list)
                                 chats.add(chat.copy(type = getType(chat)))
-                            }
-                            chatAdapter.submitList(chats)
+
+                            viewModel.insertAllMessages(*chats.toTypedArray())
                         }
                     } else
                         Toast.makeText(
@@ -226,10 +227,15 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun sendMessage(chat: Chat) {
-        val om = ObjectMapper()
-        val fields = om.writeValueAsString(chat)
-        val body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), fields)
-        Api.retrofitService.sendMessage(authToken, body)!!
+
+        val fields = mutableMapOf(
+            "conversationId" to chat.conversationId,
+            "senderId" to chat.senderId,
+            "text" to chat.text,
+            "createdAt" to chat.createdAt,
+            "updatedAt" to chat.updatedAt
+        )
+        Api.retrofitService.sendMessage(authToken, fields)!!
             .enqueue(object : Callback<ResponseBody?> {
                 override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
                     Toast.makeText(baseContext, t.message, Toast.LENGTH_SHORT).show()
@@ -240,6 +246,7 @@ class ChatActivity : AppCompatActivity() {
                     response: Response<ResponseBody?>
                 ) {
                     if (response.message() == "OK") {
+                        viewModel.insertAllMessages(chat)
                         Toast.makeText(baseContext, "Message sent", Toast.LENGTH_SHORT).show()
                         mSocket.emit(
                             sendMessage,

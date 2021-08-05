@@ -156,7 +156,7 @@ class UpdateProfileActivity : AppCompatActivity() {
                 ) {
                     dialog.dismiss()
                     if (response.message() == "OK") {
-                        viewModel.update(user)
+                        viewModel.updateUser(user)
                         startActivity(Intent(baseContext, MainActivity::class.java))
                     } else
                         Toast.makeText(applicationContext, response.message(), Toast.LENGTH_SHORT)
@@ -169,7 +169,8 @@ class UpdateProfileActivity : AppCompatActivity() {
     private fun setDefaultData() {
 
         binding.apply {
-            viewModel.getUserData().observe(this@UpdateProfileActivity) { user ->
+            val prefs = getSharedPreferences("MY PREFS", MODE_PRIVATE)
+            viewModel.getUserData(prefs.getString("id", "")!!).observe(this@UpdateProfileActivity) { user ->
                 this@UpdateProfileActivity.user = user
                 for (tag in user.expectations)
                     tags.add(tag)

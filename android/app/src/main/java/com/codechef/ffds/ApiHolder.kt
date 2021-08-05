@@ -1,8 +1,5 @@
 package com.codechef.ffds
 
-import android.content.res.Resources
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -34,9 +31,6 @@ interface ApiHolder {
 
     @GET("user/details")
     fun getUserDetail(@Query("id") id: String): Call<Profile?>?
-
-    @POST("add/new/chat")
-    fun addChat(@Body chat: Chat?): Call<Chat?>?
 
     @GET("user/profile")
     fun profileView(
@@ -82,10 +76,11 @@ interface ApiHolder {
         @Path("userId") userId: String
     ): Call<Chat?>?
 
+    @FormUrlEncoded
     @POST("message")
     fun sendMessage(
         @Header("Authorization") header: String?,
-        @Body fields: RequestBody
+        @FieldMap fields: Map<String, Any>
     ): Call<ResponseBody?>?
 
 }
