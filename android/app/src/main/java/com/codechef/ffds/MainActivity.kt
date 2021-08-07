@@ -3,31 +3,17 @@ package com.codechef.ffds
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.codechef.ffds.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
     val matches: ArrayList<Profile>? = null
-    lateinit var viewModel: UserViewModel
-
-    companion object {
-        var user = Profile()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(
-            this,
-            UserViewModelFactory(application)
-        ).get(UserViewModel::class.java)
-
-        viewModel.getUserData().observe(this) {
-            user = it
-        }
         binding.bottomNav.setOnItemSelectedListener { menuItem ->
             var selectedFragment: Fragment? = null
 

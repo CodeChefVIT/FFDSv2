@@ -38,7 +38,6 @@ class ChatAdapter : ListAdapter<Chat, RecyclerView.ViewHolder>(DiffCallback()) {
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
         val currentItem = getItem(position)
         when (holder.javaClass) {
             ReceivedViewHolder::class.java -> {
@@ -94,8 +93,7 @@ class ChatAdapter : ListAdapter<Chat, RecyclerView.ViewHolder>(DiffCallback()) {
     override fun getItemViewType(position: Int) = position
 
     class DiffCallback : DiffUtil.ItemCallback<Chat>() {
-        override fun areItemsTheSame(oldItem: Chat, newItem: Chat) = //(oldItem.id == newItem.id)
-            (oldItem == newItem)
+        override fun areItemsTheSame(oldItem: Chat, newItem: Chat) = (oldItem._id == newItem._id)
 
         override fun areContentsTheSame(oldItem: Chat, newItem: Chat) = (oldItem == newItem)
     }

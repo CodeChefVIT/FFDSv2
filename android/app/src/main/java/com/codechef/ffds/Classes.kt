@@ -18,38 +18,34 @@ enum class ItemType {
     Sent, Received, Date
 }
 
+@Entity
 data class Chat(
+    @PrimaryKey(autoGenerate = false) val _id: String = "",
     val conversationId: String,
     val senderId: String,
     val text: String,
-    val createdAt: Date,
-    val updatedAt: Date,
+    @TypeConverters(DateConverter::class) val createdAt: Date,
+    @TypeConverters(DateConverter::class) val updatedAt: Date,
     val type: ItemType
 )
 
 @Entity
 data class Profile(
-    @PrimaryKey(autoGenerate = false) val primaryKey: Int = 0,
+    @PrimaryKey(autoGenerate = false) val email: String = "",
     val _id: String = "",
     val token: String = "",
+    val name: String = "",
+    val phone: String = "",
     val verified: Boolean = false,
     val branch: String = "",
     val gender: String = "",
     val bio: String = "",
     val year: String = "",
-    @TypeConverters(DataConverter::class) val expectations: List<String> = emptyList(),
+    @TypeConverters(DataConverter::class) val expectations: ArrayList<String> = ArrayList(),
     @TypeConverters(MapConverter::class) val slot: ArrayList<ArrayList<HashMap<String, Any>>> = ArrayList(),
-    val name: String = "",
-    val email: String = "",
-    val phone: String = "",
     val userImage: String = "",
     val userArray: ByteArray = byteArrayOf(),
 ) : Serializable
-
-data class ProfileResponse(
-    val message: String,
-    val user: Profile
-)
 
 data class Token(
     val message: String,
@@ -62,17 +58,19 @@ data class Feed(
 )
 
 data class Messages(
-    val lastMessage: String,
-    val profileImage: Int,
-    val name: String,
-    val id: String
+    val lastMessage: String = "",
+    val profileImage: Int = 0,
+    val name: String = "",
+    val id: String = "",
+    val conversationId: String = "",
 )
 
+@Entity
 data class Conversation(
-    val members: ArrayList<String>,
-    val _id: String,
-    val createdAt: String,
-    val updatedAt: String
+    @PrimaryKey(autoGenerate = false) val _id: String,
+    @TypeConverters(DataConverter::class) val members: ArrayList<String>,
+    @TypeConverters(DateConverter::class) val createdAt: Date,
+    @TypeConverters(DateConverter::class) val updatedAt: Date
 )
 
 class Slots {

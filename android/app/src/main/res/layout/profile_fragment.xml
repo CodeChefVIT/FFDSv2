@@ -48,7 +48,7 @@
             android:layout_gravity="start"
             android:layout_marginTop="10dp"
             android:fontFamily="@font/roboto_medium"
-            android:text="Profile"
+            android:text="@string/profile"
             android:textColor="@android:color/white"
             android:textSize="32sp" />
 
@@ -57,7 +57,7 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_marginTop="15dp"
-            android:src="@drawable/re"
+            android:src="@drawable/profile_image"
             app:civ_border_color="@color/colorPrimary"
             app:civ_border_width="2dp" />
 

@@ -23,6 +23,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.net.URISyntaxException
 import java.util.*
+import android.content.SharedPreferences
+
+
+
 
 class RegisterActivity1 : AppCompatActivity() {
 
@@ -35,7 +39,7 @@ class RegisterActivity1 : AppCompatActivity() {
 
     init {
         try {
-            mSocket = IO.socket("https://ffds-backend.azurewebsites.net/")
+            mSocket = IO.socket("https://ffds-backend.herokuapp.com/")
         } catch (e: URISyntaxException) {
         }
     }
@@ -65,7 +69,6 @@ class RegisterActivity1 : AppCompatActivity() {
 
         mSocket.connect()
         mSocket.on(verified, onNewMessage)
-
         viewModel = ViewModelProvider(
             this,
             UserViewModelFactory(application)
@@ -172,7 +175,7 @@ class RegisterActivity1 : AppCompatActivity() {
                 val token = response.body()?.token
                 if (response.message() == "OK") {
                     if (token != null) {
-                        viewModel.update(user.copy(token = token))
+                        viewModel.updateUser(user.copy(token = token))
                         startActivity(Intent(this@RegisterActivity1, RegisterActivity2::class.java))
                         finish()
                     }
@@ -186,6 +189,6 @@ class RegisterActivity1 : AppCompatActivity() {
 
     private fun saveUser(email: String) {
         user = Profile(email = email)
-        viewModel.insert(user)
+        viewModel.insertUser(user)
     }
 }

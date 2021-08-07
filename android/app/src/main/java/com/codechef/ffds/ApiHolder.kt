@@ -1,7 +1,5 @@
 package com.codechef.ffds
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -9,12 +7,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
-val gson: Gson = GsonBuilder()
-    .excludeFieldsWithoutExposeAnnotation()
-    .create()
-
 val retrofit: Retrofit = Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
-    .baseUrl("https://ffds-backend.azurewebsites.net/").build()
+    .baseUrl("https://ffds-backend.herokuapp.com/").build()
 
 val retrofitForSlots: Retrofit =
     Retrofit.Builder().addConverterFactory(GsonConverterFactory.create())
@@ -37,9 +31,6 @@ interface ApiHolder {
 
     @GET("user/details")
     fun getUserDetail(@Query("id") id: String): Call<Profile?>?
-
-    @POST("add/new/chat")
-    fun addChat(@Body chat: Chat?): Call<Chat?>?
 
     @GET("user/profile")
     fun profileView(
@@ -85,10 +76,11 @@ interface ApiHolder {
         @Path("userId") userId: String
     ): Call<Chat?>?
 
+    @FormUrlEncoded
     @POST("message")
     fun sendMessage(
         @Header("Authorization") header: String?,
-        @Body fields: RequestBody
+        @FieldMap fields: Map<String, Any>
     ): Call<ResponseBody?>?
 
 }
