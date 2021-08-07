@@ -69,8 +69,8 @@ data class Messages(
 data class Conversation(
     @PrimaryKey(autoGenerate = false) val _id: String,
     @TypeConverters(DataConverter::class) val members: ArrayList<String>,
-    val createdAt: String,
-    val updatedAt: String
+    @TypeConverters(DateConverter::class) val createdAt: Date,
+    @TypeConverters(DateConverter::class) val updatedAt: Date
 )
 
 class Slots {

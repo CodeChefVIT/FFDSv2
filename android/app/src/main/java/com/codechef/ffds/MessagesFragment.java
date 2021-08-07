@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,8 +37,6 @@ public class MessagesFragment extends Fragment {
 
     TextView noMatches;
     TextView noMessages;
-    ProgressBar matchesProgress;
-    ProgressBar messagesProgress;
     RecyclerView recyclerView;
     MessageAdapter matchAdapter;
     RecyclerView recyclerView1;
@@ -60,9 +57,6 @@ public class MessagesFragment extends Fragment {
 
         noMatches = root.findViewById(R.id.no_matches);
         noMessages = root.findViewById(R.id.no_messages);
-
-        matchesProgress = root.findViewById(R.id.matchesProgress);
-        messagesProgress = root.findViewById(R.id.messagesProgress);
 
         recyclerView = root.findViewById(R.id.matches_view);
         matchAdapter = new MessageAdapter(requireContext(), matches, false);
@@ -119,8 +113,6 @@ public class MessagesFragment extends Fragment {
                                 messages.add(new Messages(chat.getText(), R.drawable.re, profile.getName(), profile.get_id(), conversation.get_id()));
 
                             if (messages.size() + matches.size() == conversations.size()) {
-                                matchesProgress.setVisibility(View.GONE);
-                                messagesProgress.setVisibility(View.GONE);
 
                                 if (matches.isEmpty()) {
                                     noMatches.setVisibility(View.VISIBLE);

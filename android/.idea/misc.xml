@@ -4,6 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/activity_chat.xml" value="0.12952898550724637" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/matches_fragment.xml" value="0.1796875" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/messages_fragment.xml" value="0.12817028985507245" />
       </map>
     </option>
   </component>

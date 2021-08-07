@@ -40,12 +40,6 @@
             android:textSize="20sp"
             android:visibility="invisible" />
 
-        <ProgressBar
-            android:id="@+id/matchesProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/matches_view"
             android:layout_width="match_parent"
@@ -64,28 +58,17 @@
         android:textColor="@android:color/white"
         android:textSize="32sp" />
 
-    <RelativeLayout
+    <TextView
+        android:id="@+id/no_messages"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="@string/no_messages"
+        android:textColor="#CECCCC"
+        android:textSize="20sp"
+        android:visibility="invisible" />
 
-        <ProgressBar
-            android:id="@+id/messagesProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
-
-        <TextView
-            android:visibility="invisible"
-            android:id="@+id/no_messages"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:fontFamily="@font/roboto_medium"
-            android:text="@string/no_messages"
-            android:textColor="#CECCCC"
-            android:textSize="20sp" />
-
-    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messages_view"
