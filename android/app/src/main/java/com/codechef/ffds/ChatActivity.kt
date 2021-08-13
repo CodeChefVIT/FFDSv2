@@ -235,6 +235,7 @@ class ChatActivity : AppCompatActivity() {
             "createdAt" to chat.createdAt,
             "updatedAt" to chat.updatedAt
         )
+
         Api.retrofitService.sendMessage(authToken, fields)!!
             .enqueue(object : Callback<ResponseBody?> {
                 override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {

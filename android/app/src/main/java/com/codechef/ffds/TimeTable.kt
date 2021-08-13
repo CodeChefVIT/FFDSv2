@@ -1,23 +1,31 @@
 package com.codechef.ffds
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.ImageDecoder
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Base64.DEFAULT
-import android.util.Base64.encodeToString
 import android.util.Log
 import android.widget.TableRow
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.codechef.ffds.databinding.ActivityTimeTableBinding
-import java.io.ByteArrayOutputStream
-import java.io.Serializable
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Response
+import java.io.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class TimeTable : AppCompatActivity() {
@@ -30,14 +38,22 @@ class TimeTable : AppCompatActivity() {
         setContentView(binding.root)
 
         tableMap = Slots().getSlots()
-        Log.d("SLOTS", tableMap.toString())
 
         val resultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
 
                 if (result.resultCode == Activity.RESULT_OK) {
+
+                    val dialog = Dialog(this)
+                    val view = layoutInflater.inflate(R.layout.loading_dialog, null)
+                    view.findViewById<TextView>(R.id.text).text = "Uploading..."
+                    dialog.setContentView(view)
+                    dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    dialog.show()
+
                     val data = result.data
                     val imageURI = data?.data
+
                     val bitmap = if (android.os.Build.VERSION.SDK_INT >= 29)
                         ImageDecoder.decodeBitmap(
                             ImageDecoder.createSource(
@@ -47,9 +63,53 @@ class TimeTable : AppCompatActivity() {
                         )
                     else
                         MediaStore.Images.Media.getBitmap(contentResolver, imageURI)
-                    val stream = ByteArrayOutputStream()
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                    encodeToString(stream.toByteArray(), DEFAULT)
+
+                    val file =
+                        File(getExternalFilesDir(null)?.absolutePath + File.separator + "timeTable.png")
+                    file.createNewFile()
+
+                    val bos = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos)
+                    val bitmapData = bos.toByteArray()
+
+                    val fos = FileOutputStream(file)
+                    fos.write(bitmapData)
+                    fos.flush()
+                    fos.close()
+
+                    val filePart = MultipartBody.Part.createFormData(
+                        "file", file.absolutePath, file
+                            .asRequestBody("multipart/form-data".toMediaTypeOrNull())
+                    )
+
+                    Api.retrofitServiceForSlots.getFreeSlots(filePart)
+                        ?.enqueue(object : retrofit2.Callback<ResponseBody?> {
+                            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                                dialog.dismiss()
+                                Toast.makeText(
+                                    applicationContext,
+                                    "FAILED: ${t.message}",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
+                            }
+
+                            override fun onResponse(
+                                call: Call<ResponseBody?>,
+                                response: Response<ResponseBody?>
+                            ) {
+                                dialog.dismiss()
+                                if (response.message() == "OK") {
+                                    Log.d("myTag", response.body()?.string()!!)
+                                } else
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "ERROR: ${response.message()}",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                            }
+                        })
                 }
 
             }

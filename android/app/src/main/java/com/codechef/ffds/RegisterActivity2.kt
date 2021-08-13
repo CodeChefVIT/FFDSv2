@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.codechef.ffds.databinding.Register2ActivityBinding
 import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -82,7 +83,7 @@ class RegisterActivity2 : AppCompatActivity() {
 
         val om = ObjectMapper()
         val fields = om.writeValueAsString(user)
-        val body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), fields)
+        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), fields)
         Api.retrofitService.update(user.token, body)
             ?.enqueue(object : retrofit2.Callback<ResponseBody?> {
                 override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
