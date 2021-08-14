@@ -24,6 +24,7 @@ import com.codechef.ffds.databinding.UpdateProfileActivityBinding
 import com.cunoraz.tagview.Tag
 import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -70,9 +71,8 @@ class UpdateProfileActivity : AppCompatActivity() {
                         MediaStore.Images.Media.getBitmap(contentResolver, imageURI)
                     binding.dp.setImageBitmap(bitmap)
                     val stream = ByteArrayOutputStream()
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                     imageArray = stream.toByteArray()
-                    Log.d("myTag", imageURI.toString())
                     //image = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
                 }
 
@@ -142,7 +142,7 @@ class UpdateProfileActivity : AppCompatActivity() {
         dialog.show()
         val om = ObjectMapper()
         val fields = om.writeValueAsString(user)
-        val body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), fields)
+        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), fields)
         Api.retrofitService.update(user.token, body)
             ?.enqueue(object : retrofit2.Callback<ResponseBody?> {
                 override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
