@@ -6,12 +6,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Profile::class], version = 1)
-@TypeConverters(DataConverter::class, MapConverter::class)
+@Database(entities = [Profile::class, Conversation::class, Chat::class], version = 1)
+@TypeConverters(DataConverter::class, MapConverter::class, DateConverter::class)
 abstract class UserDatabase : RoomDatabase() {
 
-
-    abstract fun noteDao(): UserDao
+    abstract fun userDao(): UserDao
 
     companion object {
         private lateinit var instance: UserDatabase

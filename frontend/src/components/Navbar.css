@@ -1,0 +1,38 @@
+body{
+  font-family:sans-serif;
+}
+
+#nav-bar{
+  position:sticky;
+  z-index: 10;
+}
+
+.navbar{
+  background-color: black;
+  padding: 0;
+}
+
+.navbar-brand img{
+  height:30px;
+  padding-left:50px;
+  margin-top: 10px;
+}
+
+.navbar-nav li{
+  padding:0 100px;
+  font-size: 15px;
+}
+.navbar-nav li a{
+  color: #fff !important;
+  font-weight: 600;
+  float:right;
+  text-align:left;
+}
+.iconhome {
+  padding-right:20px;
+  padding-top:10px;
+}
+
+.navbar-toggler{
+  color:#fff !important;
+}

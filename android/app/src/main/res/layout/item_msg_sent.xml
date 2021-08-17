@@ -4,8 +4,8 @@
     android:layout_height="wrap_content"
     android:layout_alignParentEnd="true"
     android:orientation="vertical"
-    android:paddingVertical="10dp"
     android:paddingStart="60dp"
+    android:paddingTop="10dp"
     android:paddingEnd="15dp">
 
     <LinearLayout
@@ -30,7 +30,7 @@
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white" />
+            android:textColor="@color/lightGray" />
 
     </LinearLayout>
 

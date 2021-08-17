@@ -5,28 +5,70 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import com.codechef.ffds.databinding.Register1ActivityBinding
+import io.socket.client.IO
+import io.socket.client.Socket
+import io.socket.emitter.Emitter
 import okhttp3.ResponseBody
+import org.json.JSONException
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.net.URISyntaxException
+import java.util.*
+import android.content.SharedPreferences
+
+
+
 
 class RegisterActivity1 : AppCompatActivity() {
 
     lateinit var binding: Register1ActivityBinding
     lateinit var viewModel: UserViewModel
     var user = Profile()
+    private lateinit var mSocket: Socket
+    private val verified = "verified"
+    private val looking = "looking"
+
+    init {
+        try {
+            mSocket = IO.socket("https://ffds-backend.herokuapp.com/")
+        } catch (e: URISyntaxException) {
+        }
+    }
+
+    private val onNewMessage =
+        Emitter.Listener { args ->
+            runOnUiThread(Runnable {
+                val data = args[0] as JSONObject
+                Log.d("myTag", data.toString())
+                val verified: Boolean
+                try {
+                    verified = data.getBoolean(this.verified)
+                } catch (e: JSONException) {
+                    Log.d("myTag2", e.message!!)
+                    return@Runnable
+                }
+
+                if (verified)
+                    binding.apply { login(emailInput.text.toString(), passInput.text.toString()) }
+            })
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = Register1ActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        mSocket.connect()
+        mSocket.on(verified, onNewMessage)
         viewModel = ViewModelProvider(
             this,
             UserViewModelFactory(application)
@@ -109,6 +151,7 @@ class RegisterActivity1 : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     )
                         .show()
+                    mSocket.emit(looking, email)
                     saveUser(email)
                     binding.registerBtn.text = "CONTINUE"
                 } else
@@ -132,7 +175,7 @@ class RegisterActivity1 : AppCompatActivity() {
                 val token = response.body()?.token
                 if (response.message() == "OK") {
                     if (token != null) {
-                        viewModel.update(user.copy(token = token))
+                        viewModel.updateUser(user.copy(token = token))
                         startActivity(Intent(this@RegisterActivity1, RegisterActivity2::class.java))
                         finish()
                     }
@@ -146,6 +189,6 @@ class RegisterActivity1 : AppCompatActivity() {
 
     private fun saveUser(email: String) {
         user = Profile(email = email)
-        viewModel.insert(user)
+        viewModel.insertUser(user)
     }
 }

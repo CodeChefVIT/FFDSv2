@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.RadioButton
 import android.widget.Toast
@@ -14,9 +13,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.codechef.ffds.databinding.Register2ActivityBinding
 import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 
 class RegisterActivity2 : AppCompatActivity() {
@@ -46,7 +47,8 @@ class RegisterActivity2 : AppCompatActivity() {
                     prompt.text = "* Fields can't be empty"
                     prompt.visibility = View.VISIBLE
                 } else {
-                    viewModel.getUserData().observe(this@RegisterActivity2) { user ->
+                    val prefs = getSharedPreferences("MY PREFS", MODE_PRIVATE)
+                    viewModel.getUserData(prefs.getString("id", "")!!).observe(this@RegisterActivity2) { user ->
                         updateUser(
                             user.copy(
                                 name = name,
@@ -81,7 +83,7 @@ class RegisterActivity2 : AppCompatActivity() {
 
         val om = ObjectMapper()
         val fields = om.writeValueAsString(user)
-        val body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), fields)
+        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), fields)
         Api.retrofitService.update(user.token, body)
             ?.enqueue(object : retrofit2.Callback<ResponseBody?> {
                 override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
@@ -95,7 +97,7 @@ class RegisterActivity2 : AppCompatActivity() {
                 ) {
                     dialog.dismiss()
                     if (response.message() == "OK") {
-                        viewModel.update(user)
+                        updateProfile(user.token)
                         startActivity(Intent(baseContext, MainActivity::class.java))
                         finish()
                     } else
@@ -104,6 +106,30 @@ class RegisterActivity2 : AppCompatActivity() {
                 }
             })
 
+    }
+
+    fun updateProfile(token: String) {
+        Api.retrofitService.profileView(token)
+            ?.enqueue(object : Callback<Profile?> {
+                override fun onFailure(call: Call<Profile?>, t: Throwable) {
+                    Toast.makeText(baseContext, t.message, Toast.LENGTH_LONG).show()
+                }
+                override fun onResponse(
+                    call: Call<Profile?>,
+                    response: Response<Profile?>
+                ) {
+                    if (response.message() == "OK") {
+                        val user: Profile = response.body()!!
+                        viewModel.updateUser(user)
+                        val editor = getSharedPreferences("MY PREFS", MODE_PRIVATE).edit()
+                        editor.putString("id", user._id).apply()
+                        startActivity(Intent(baseContext, MainActivity::class.java))
+                        finish()
+                    } else
+                        Toast.makeText(applicationContext, response.message(), Toast.LENGTH_LONG)
+                            .show()
+                }
+            })
     }
 
     override fun onBackPressed() {

@@ -2,6 +2,7 @@ package com.codechef.ffds;
 
 import android.animation.Animator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -16,14 +17,20 @@ import com.airbnb.lottie.LottieAnimationView;
 public class SplashScreen extends AppCompatActivity {
 
     boolean tokenPresent = false;
+    boolean namePresent = false;
 
     @Override
     protected void onStart() {
         super.onStart();
         UserViewModel viewModel = new ViewModelProvider(this, new UserViewModelFactory(getApplication())).get(UserViewModel.class);
-        viewModel.getUserData().observe(this, user -> {
-            if (user!= null && !user.getToken().isEmpty())
-                tokenPresent = true;
+        SharedPreferences prefs = getSharedPreferences("MY PREFS", MODE_PRIVATE);
+        viewModel.getUserData(prefs.getString("id", "")).observe(this, user -> {
+            if (user!= null) {
+                if (!user.getToken().isEmpty())
+                    tokenPresent = true;
+                if(!user.getName().isEmpty())
+                    namePresent = true;
+            }
         });
     }
 
@@ -47,9 +54,11 @@ public class SplashScreen extends AppCompatActivity {
                 icon.setVisibility(View.VISIBLE);
                 text.setVisibility(View.VISIBLE);
 
-                new Handler().postDelayed(() -> {
-                    if (tokenPresent)
+                new Handler(getMainLooper()).postDelayed(() -> {
+                    if (tokenPresent && namePresent)
                         startActivity(new Intent(SplashScreen.this, MainActivity.class));
+                    else if(tokenPresent)
+                        startActivity(new Intent(SplashScreen.this, RegisterActivity2.class));
                     else
                         startActivity(new Intent(SplashScreen.this, RegisterActivity1.class));
                     finishAffinity();
