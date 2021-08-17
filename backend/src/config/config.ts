@@ -3,7 +3,7 @@ import process from "process";
 dotenv.config();
 
 const SERVER_HOSTNAME = process.env.SERVER_HOSTNAME || 'localhost';
-const SERVER_PORT = process.env.PORT || 1337;
+const SERVER_PORT = process.env.PORT || 4000;
 const SERVER_TOKEN_EXPIRETIME = process.env.EXPIRETIME || 3600;
 const SERVER_TOKEN_ISSUER = process.env.ISSUER || "JustAnIssuer";
 const SERVER_TOKEN_SECRET = process.env.SECRET || "GoodLuckWithTheSecret"; 

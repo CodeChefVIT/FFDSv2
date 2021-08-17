@@ -9,8 +9,6 @@ import slotMapper from './functions/slotMapper';
 import config from '../config/config';
 import jwt from 'jsonwebtoken';
 
-// let io = require('../socket/socket').io();
-
 const NAMESPACE = 'User Controller'
 const vitEmailRegex = /^([A-Za-z]+\.[A-za-z]+[0-9]{4,4}@vitstudent.ac.in)/gm;
 
@@ -24,6 +22,68 @@ const validateToken = (req: Request, res: Response, next: NextFunction) =>{
         email: res.locals.jwt.email
     })
 };
+
+const getFeed = async(req: Request, res: Response, next: NextFunction) =>{
+    logging.info(NAMESPACE,`Get User Matching Feed`);
+    try{
+        let id = res.locals.jwt.id;
+        let final: any = [];
+        let user = await User.findOne({"_id":id})
+        .catch((err:any) =>{
+            return res.status(500).send({
+                "err": true,
+                "error": err
+            })
+        })
+        let feed = [];
+        if(user.genderPreference!=="none"){
+            feed = await User.find({"_id":{ $nin: user.rejected.concat(user.matched).concat(user.blacklist).concat([id]) }, "gender": user.genderPreference, "verified":true}).select("-password")
+        }else{
+            feed = await User.find({"_id":{ $nin: user.rejected.concat(user.matched).concat(user.blacklist).concat([id]) }, "verified":true}).select("-password")
+        }
+        if(!feed || feed === []){
+            return res.status(404).send({"message":"No Matches Found"});
+        }
+        if(user.slot === []){
+            return res.status(400).send({"message":"User TimeTable is Not Uploaded"});
+        }
+        feed.forEach((match:any) => {
+            if(match.slot !== []){
+                let commonSlotLength = 0;
+                let tempUser = match._doc;
+                for(let i=0; i<7; i++) {
+                    for(let j=0; j<match.slot[i].length; j++) {
+                        if(match.slot[i][j].free && user.slot[i][j].free){
+                            commonSlotLength++;
+                        }
+                    }
+                }
+                delete tempUser['slot'];
+                final.push({...tempUser, commonSlotLength});
+            }
+        })
+
+        final.sort(function(a:any, b:any) {
+            var keyA = new Date(a.commonSlotLength),
+              keyB = new Date(b.commonSlotLength);
+            if (keyA > keyB) return -1;
+            if (keyA < keyB) return 1;
+            return 0;
+          });
+        
+        if(final === []){
+            return res.status(404).send({"message":"No Matches Found"});
+        }
+
+        return res.status(200).send({"feed": final});
+
+    }catch(err){
+        return res.status(500).send({
+            err: true,
+            "error":err
+        })
+    }
+}
 
 const verifyUser = (req: Request, res: Response, next: NextFunction) =>{
     logging.info(NAMESPACE,`Verifying User Email`);
@@ -293,7 +353,6 @@ const updateUser = async(req: Request, res: Response, next: NextFunction) =>{
 const getProfile = async(req: Request, res: Response, next: NextFunction) =>{
     logging.info(NAMESPACE,`Get User Route Called`);
     let id = res.locals.jwt.id;
-    console.log(res.locals.jwt)
     let user = await User.findOne({"_id":id})
     .select("-password")
     .catch((err:any) =>{
@@ -349,4 +408,4 @@ const getAllUsers = async(req: Request, res: Response, next: NextFunction) =>{
     return res.status(200).send(users);
 }
 
-export default {getAllUsers, getProfile, slotUploader, getUser, validateToken, register, login, verifyUser, sendEmailLink, updateUser}
+export default {getAllUsers, getProfile, slotUploader, getUser, validateToken, register, login, verifyUser, sendEmailLink, updateUser, getFeed}

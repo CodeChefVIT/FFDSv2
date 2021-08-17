@@ -12,6 +12,28 @@ const UserSchema: Schema = new Schema({
         required: true,
         trim:true,
     },
+    genderPreference:{
+        type: String,
+        default:"none"
+    },
+    matched:[
+        {
+            type: String,
+            default: ""
+        }
+    ],
+    rejected:[
+        {
+            type: String,
+            default: ""
+        }
+    ],
+    blacklist:[
+        {
+            type: String,
+            default: ""
+        }
+    ],
     verified:{
         type:Boolean,
         default:false

@@ -10,6 +10,8 @@ router.get('/all', controller.getAllUsers);
 
 router.get('/profile', auth, controller.getProfile);
 
+router.get('/feed', auth, controller.getFeed);
+
 router.post('/slot', controller.slotUploader);
 
 router.get('/details', controller.getUser);
