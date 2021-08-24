@@ -16,7 +16,7 @@ const UserSchema: Schema = new Schema({
         type: String,
         default:"none"
     },
-    matched:[
+    accepted:[
         {
             type: String,
             default: ""
@@ -28,7 +28,7 @@ const UserSchema: Schema = new Schema({
             default: ""
         }
     ],
-    blacklist:[
+    blocked:[
         {
             type: String,
             default: ""
