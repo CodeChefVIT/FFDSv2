@@ -24,6 +24,7 @@ const upload = (res:Response) => multer({
   storage: multerS3({
     acl: 'public-read',
     s3,
+    contentType: multerS3.AUTO_CONTENT_TYPE,
     bucket: 'ffds-cc',
     metadata: function (req, file, cb) {
       cb(null, {profileImage: 'FFDS Profile Image'});
