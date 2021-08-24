@@ -5,17 +5,17 @@ import logging from '../../config/logging';
 let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: config.mail.user,
-      pass: config.mail.pass,
+      user: config.mail.user!,
+      pass: config.mail.pass!,
     }
   });
 
 const NAMESPACE = 'Mailer';
 
 
-const sendEmail = (user:any, token:string, callback:(error: Error | null, message: any | null) => void): void => {
-    logging.info(NAMESPACE,`Sending a Mail`)
-    const url = `https://ffds-backend.azurewebsites.net/user/verification?t=${token}`
+const verification = (user:any, token:string, callback:(error: Error | null, message: any | null) => void): void => {
+    logging.info(NAMESPACE,`Sending a verification E-Mail`)
+    const url = `https://ffds-backend.herokuapp.com/user/verification?t=${token}`
     let mailOptions={
         to : user.email,
         subject : "FFDS: Please confirm your Email account",
@@ -26,10 +26,29 @@ const sendEmail = (user:any, token:string, callback:(error: Error | null, messag
             callback(error,null)
         }else{
             callback(error,{
-                message:"Email Sent"
+                message:"Email Sent for account verification"
             })
             }
         });
 }
 
-export default sendEmail;
+const password = (user:any, token:string, callback:(error: Error | null, message: any | null) => void): void => {
+    logging.info(NAMESPACE,`Sending a password reset E-Mail`)
+    const url = `https://ffds-backend.herokuapp.com/user/passwordReset?t=${token}`
+    let mailOptions={
+        to : user.email,
+        subject : "FFDS: Password Reset",
+        html : "<br> Please Click on the link to reset your password.<br><a href="+url+">Click here</a><br>If you think this was not you, ignore this email"
+    }
+    transporter.sendMail(mailOptions, function(error, response){
+        if(error){
+            callback(error,null)
+        }else{
+            callback(error,{
+                message:"Password Reset Email Sent"
+            })
+            }
+        });
+}
+
+export default {verification,password};

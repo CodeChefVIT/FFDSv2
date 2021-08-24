@@ -20,10 +20,20 @@ router.post('/register', controller.register);
 
 router.post('/login',controller.login);
 
-router.post('/email',controller.sendEmailLink);
+router.post('/email/verify',controller.sendEmailVerification);
+
+router.post('/email/password',controller.sendEmailPassword);
+
+router.post('/reset', controller.updatePassword);
 
 router.get('/verification', controller.verifyUser);
 
+router.get('/passwordReset', controller.passwordReset);
+
 router.put('/update',auth,controller.updateUser);
+
+router.put('/reject/:userId',auth,controller.rejectMatch);
+
+router.post('/image',auth, controller.imageUpload);
 
 export = router;
