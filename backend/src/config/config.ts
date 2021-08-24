@@ -4,8 +4,8 @@ dotenv.config();
 
 const SERVER_HOSTNAME = process.env.SERVER_HOSTNAME || 'localhost';
 const SERVER_PORT = process.env.PORT || 4000;
-const SERVER_TOKEN_EXPIRETIME_LONG =  3600;
-const SERVER_TOKEN_EXPIRETIME_DAY =  864;
+const SERVER_TOKEN_EXPIRETIME_LONG = 0;
+const SERVER_TOKEN_EXPIRETIME_DAY = 864;
 const SERVER_TOKEN_ISSUER = process.env.ISSUER || "CodeChef-VIT";
 const SERVER_TOKEN_SECRET = process.env.SECRET; 
 const DATABASE_URL =  process.env.DB_CONNECT;

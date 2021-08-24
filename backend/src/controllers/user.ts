@@ -1,18 +1,21 @@
 import {Request, Response, NextFunction} from 'express';
+import jwt from 'jsonwebtoken';
 import logging from '../config/logging';
 import bcryptjs from 'bcryptjs';
 import User from '../models/User';
 import mongoose from 'mongoose';
 import signJWT from './functions/signJWT';
 import sendEmail from './functions/sendEmail';
-import slotMapper from './functions/slotMapper';
+import slotMapper from '../services/slotMapper';
+import upload from '../services/imageUpload';
 import config from '../config/config';
-import jwt from 'jsonwebtoken';
+
+interface MulterRequest extends Request {
+    file: any;
+}
 
 const NAMESPACE = 'User Controller'
 const vitEmailRegex = /^([A-Za-z]+\.[A-za-z]+[0-9]{4,4}@vitstudent.ac.in)/gm;
-
-
 
 const validateToken = (req: Request, res: Response, next: NextFunction) =>{
     logging.info(NAMESPACE,`Token Validated, user authorized`)
@@ -37,9 +40,9 @@ const getFeed = async(req: Request, res: Response, next: NextFunction) =>{
         })
         let feed = [];
         if(user.genderPreference!=="none"){
-            feed = await User.find({"_id":{ $nin: user.rejected.concat(user.matched).concat(user.blacklist).concat([id]) }, "gender": user.genderPreference, "verified":true}).select("-password")
+            feed = await User.find({"_id":{ $nin: user.rejected.concat(user.accepted).concat(user.blocked).concat([id]) }, "gender": user.genderPreference, "verified":true}).select("-password")
         }else{
-            feed = await User.find({"_id":{ $nin: user.rejected.concat(user.matched).concat(user.blacklist).concat([id]) }, "verified":true}).select("-password")
+            feed = await User.find({"_id":{ $nin: user.rejected.concat(user.accepted).concat(user.blocked).concat([id]) }, "verified":true}).select("-password")
         }
         if(!feed || feed === []){
             return res.status(404).send({"message":"No Matches Found"});
@@ -95,7 +98,7 @@ const verifyUser = (req: Request, res: Response, next: NextFunction) =>{
         req.app.locals.users = req.app.locals.users.filter((user:any)=>user.socketId !== socketId)
     }
     const token:string = String(req.query.t);
-    jwt.verify(token, config.server.token.secret, (err,decoded)=>{
+    jwt.verify(token, config.server.token.secret!, (err,decoded)=>{
         if(err)
         {
             res.status(403).send({
@@ -146,7 +149,7 @@ const slotUploader = (req: Request, res: Response, next: NextFunction) => {
     slotMapper(Slots,req,res,next);
 }
 
-const sendEmailLink = async(req: Request, res: Response, next: NextFunction) =>{
+const sendEmailVerification = async(req: Request, res: Response, next: NextFunction) =>{
     const {email} = req.body;
     let user = await User.findOne({email});
 
@@ -158,7 +161,7 @@ const sendEmailLink = async(req: Request, res: Response, next: NextFunction) =>{
         return res.status(401).send({err:true, message:"User Already Verified"})
     }
 
-    signJWT(user,(error,token)=>{
+    signJWT(user, config.server.token.expireTimeDay, (error,token)=>{
         if(error){
             logging.error(NAMESPACE,"Unable to Sign Token: ",error)
 
@@ -169,7 +172,7 @@ const sendEmailLink = async(req: Request, res: Response, next: NextFunction) =>{
             })
         }
         else if(token){
-            sendEmail(user,token,(error,message)=>{
+            sendEmail.verification(user,token,(error:any,message:any)=>{
                 if(error){
                     return res.status(401).send({
                         err: true,
@@ -183,6 +186,101 @@ const sendEmailLink = async(req: Request, res: Response, next: NextFunction) =>{
     })
 
 
+}
+
+const sendEmailPassword = async(req: Request, res: Response, next: NextFunction) =>{
+    const {email} = req.body;
+    let user = await User.findOne({email});
+
+    if(!user){
+        return res.status(404).send({err:true, message:"User not found, Register First"})
+    }
+
+    signJWT(user, config.server.token.expireTimeDay, (error,token)=>{
+        if(error){
+            logging.error(NAMESPACE,"Unable to Sign Token: ",error)
+
+            return res.status(401).send({
+                err: true,
+                message: "Not Authorized",
+                "error": error
+            })
+        }
+        else if(token){
+            sendEmail.password(user,token,(error:any,message:any)=>{
+                if(error){
+                    return res.status(401).send({
+                        err: true,
+                        "error": error
+                    })
+                }else{
+                    return res.status(200).send(message)
+                }
+            });
+        }
+    })
+
+
+}
+
+const passwordReset = (req: Request, res: Response, next: NextFunction) =>{
+    logging.info(NAMESPACE,`Password Reset Route Called`);
+    const token:string = String(req.query.t);
+    jwt.verify(token, config.server.token.secret!, (err,decoded)=>{
+        if(err)
+        {
+            res.status(403).send({
+                "err":true,
+                "message": err.message,
+                "error": err
+            })
+        }else if(decoded){
+            let {email,id}:any = decoded;
+            User.findOne({email}).then(async(user:any) =>{
+                if(!user){
+                    return res.status(404).send(
+                    {
+                        err:true,
+                        message: "User not found"
+                    })
+                }
+                if(id==user._id){
+                    return res.status(200).send({
+                        redirect: true,
+                        userId: id,
+                        message:"User Verified, Redirect to password reset"
+                    })
+                }
+            }).catch((err:any) =>{
+                return res.status(500).send({
+                    "err":true,
+                    "error":err
+                })
+            })
+        }
+        
+    })
+}
+
+const updatePassword =  async(req: Request, res: Response, next: NextFunction) =>{
+    logging.info(NAMESPACE,`Resetting Password Route Called`);
+    const {id, password} = req.body;
+    bcryptjs.hash(password,10,async(hashError, hash)=>{
+        if(hashError){
+            return res.status(500).json({
+                err:true,
+                message:hashError.message,
+                "error": hashError
+            });
+        }
+        let user = await User.findOneAndUpdate(id,{password: hash});
+        if(user===null || user===undefined){
+            return res.status(404).json({err:true,message:"User not found"})
+        }
+        else{
+            return res.status(200).json({message:"Password Resetted Successfully"});
+        }
+    })
 }
 
 const login = async(req: Request, res: Response, next: NextFunction) =>{
@@ -205,7 +303,7 @@ const login = async(req: Request, res: Response, next: NextFunction) =>{
                 })
             } 
             else if(result){
-                signJWT(user,(error,token)=>{
+                signJWT(user, config.server.token.expireTimeLong, (error,token)=>{
                     if(error){
                         logging.error(NAMESPACE,"Unable to Sign Token: ",error)
 
@@ -250,7 +348,6 @@ const register = async(req: Request, res: Response, next: NextFunction) =>{
     try{
         logging.info(NAMESPACE,`User Create Route Called`);
         const { email, password} = req.body
-
         User.findOne({email}).then((user:any) =>{
             if(user){
                 return res.status(401).send({
@@ -287,7 +384,7 @@ const register = async(req: Request, res: Response, next: NextFunction) =>{
                     message: "User Not Registered"
                 }) 
             }
-            signJWT(user,(error,token)=>{
+            signJWT(user, config.server.token.expireTimeDay, (error,token)=>{
                 if(error){
                     logging.error(NAMESPACE,"Unable to Sign Token: ",error)
 
@@ -298,7 +395,7 @@ const register = async(req: Request, res: Response, next: NextFunction) =>{
                     })
                 }
                 else if(token){
-                    sendEmail(user,token,(error,message)=>{
+                    sendEmail.verification(user,token,(error:any,message:any)=>{
                         if(error){
                             return res.status(401).send({
                                 err: true,
@@ -408,4 +505,35 @@ const getAllUsers = async(req: Request, res: Response, next: NextFunction) =>{
     return res.status(200).send(users);
 }
 
-export default {getAllUsers, getProfile, slotUploader, getUser, validateToken, register, login, verifyUser, sendEmailLink, updateUser, getFeed}
+const rejectMatch = async(req: Request, res: Response, next: NextFunction) =>{
+    logging.info(NAMESPACE,`Rejecting a match`);
+    let selfUserId = res.locals.jwt.id;
+    try {
+    const selfUser = await User.findById(selfUserId);
+    if(selfUser.rejected.includes(req.params.userId)) return res.status(400).send({err:true,message:"User already rejected"})
+    else if(selfUser.accepted.includes(req.params.userId)) return res.status(400).send({err:true,message:"User already accepted"})
+    else if(selfUser.blocked.includes(req.params.userId)) return res.status(400).send({err:true,message:"User already blocked"})
+    else{
+        selfUser.rejected.push(req.params.userId);
+        selfUser.save();
+        return res.status(200).send({message:"User successfully rejected"})
+    }
+
+    } catch (err) {
+        return res.status(500).json(err);
+      }
+}
+
+const imageUpload = (req: any , res: Response, next: NextFunction) =>{
+    logging.info(NAMESPACE,`Uploading an image`);
+    const singleUpload = upload(res).single('image');
+    singleUpload(req, res, function(err:any) {
+        if (err) {
+          return res.status(422).send({errors: [{title: 'Image Upload Error', detail: err.message}]});
+        }
+        console.log(req.file)
+        return res.json({'imageUrl': req.file.location});
+      });
+}
+
+export default {imageUpload, getAllUsers, getProfile, slotUploader, getUser, validateToken, register, login, verifyUser, sendEmailVerification, sendEmailPassword, passwordReset, updatePassword, updateUser, getFeed, rejectMatch}

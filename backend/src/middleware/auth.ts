@@ -11,7 +11,7 @@ const auth= async(req:Request,res:Response,next:NextFunction)=>{
         let token = req.headers.authorization || req.headers.authorization?.split(" ")[1]
         if(token)
         {
-            jwt.verify(token,config.server.token.secret,(err,decoded)=>{
+            jwt.verify(token,config.server.token.secret!,(err,decoded)=>{
                 if(err)
                 {
                     res.status(403).send({
