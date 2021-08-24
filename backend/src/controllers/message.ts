@@ -80,7 +80,7 @@ const getLastMessage = async(req: Request, res: Response, next: NextFunction) =>
           );
         }
         if(conversation.blocked){
-          return res.status(200).json("Conversation Blocked");
+          return res.status(200).json({text:"Conversation Blocked"});
         }
 
         const message = await Message.findOne({

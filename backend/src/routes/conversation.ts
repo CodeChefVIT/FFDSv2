@@ -6,9 +6,7 @@ const router = express.Router();
 
 router.post("/", auth, controller.createNewConversation);
 
-
 router.get("/", auth, controller.getConversationOfUser);
-
 
 router.get("/find/:userId", auth, controller.getPairConversation);
 
