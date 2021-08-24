@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -71,7 +72,7 @@ class LoginActivity : AppCompatActivity() {
                 val token = response.body()?.token
                 if (response.message() == "OK") {
                     if (token != null) {
-                        viewModel.insert(Profile(token = token))
+                        viewModel.insertUser(Profile(token = token, email = email))
                         updateProfile(token)
                     }
                 }
@@ -95,7 +96,9 @@ class LoginActivity : AppCompatActivity() {
                 ) {
                     if (response.message() == "OK") {
                         val user: Profile = response.body()!!
-                        viewModel.update(user.copy(token = token))
+                        viewModel.updateUser(user.copy(token = token))
+                        val editor = getSharedPreferences("MY PREFS", MODE_PRIVATE).edit()
+                        editor.putString("id", user._id).apply()
                         startActivity(Intent(baseContext, MainActivity::class.java))
                         finish()
                     } else

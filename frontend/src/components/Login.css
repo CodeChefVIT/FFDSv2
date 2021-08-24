@@ -1,0 +1,86 @@
+/* .Login{
+    padding-left:100px;
+    color:#991274;
+    border:0px;
+    border-bottom:5px;
+    outline:0px;
+
+}
+.form{
+    outline:0px;
+}
+.input{
+    border:transparent !important;
+    border-bottom-color:#991274 !important;
+    width:300px;
+}
+.loginmessage
+{
+    padding-top:40px;
+     padding-left:100px;
+     padding-bottom:50px;
+     color:#991274 !important;
+}
+.loginbutton{
+
+    margin-top:30px;
+    width:150px;
+    border-radius: 10px;
+    /* background-color:#991274; */
+/*} */
+.Login{
+    padding-left: 100px;
+    color: #991274;
+    border: 0px;
+    border-bottom: 5px;
+    outline: 0px;
+
+}
+
+.input{
+    border: 0px !important;
+    border-bottom: 2px solid #FE0074 !important;
+    margin-bottom: 40px !important;
+    width: 300px !important;
+}
+
+.input:hover {
+    outline: 0px;
+    border: 0px;
+}
+
+input:focus { 
+    outline: none !important;
+    color:#FE0074;
+}
+textarea:focus { 
+    outline: none !important;
+}
+
+
+.loginbutton{
+    margin-top:30px;
+    width:150px;
+    border-radius: 10px;
+    background-color:#ED3B9D !important;
+}
+.message{
+    padding-left: 100px;
+    padding-top: 70px;
+}
+.message > h4{
+    padding-top: 30px;
+    padding-bottom: 30px;
+    color:#991274;
+}
+.passicon {
+    color:#FE0074 !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+    position: relative;
+    left: 200px;
+    top:55px;
+  }
+  .loginimg{
+      padding-top:150px;
+  }

@@ -1,0 +1,29 @@
+.footer{
+    padding:20px ;
+    color:white;
+    background-color:#E31A6C;
+
+}
+#footermsg{
+     display: flex;
+     margin-left:auto;
+    align-items: left;
+    padding-top:10px;  
+   
+}
+ .social-icons img{
+    
+
+height:50px;
+width:50px;
+ margin-right:100px; 
+
+} 
+.social-icons{
+    padding-left:200px;
+    position:relative;
+    /* float:right ; */
+}
+.cl >h4{
+    color:white !important;
+}

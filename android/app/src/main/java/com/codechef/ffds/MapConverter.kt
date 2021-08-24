@@ -8,22 +8,22 @@ import java.lang.reflect.Type
 class MapConverter {
 
     @TypeConverter
-    fun fromMap(tableMap: ArrayList<ArrayList<HashMap<String, Boolean>>>): String {
+    fun fromMap(tableMap: ArrayList<ArrayList<HashMap<String, Any>>>): String {
         val gson = Gson()
         val type: Type =
-            object : TypeToken<ArrayList<ArrayList<HashMap<String, Boolean>>>>() {}.type
+            object : TypeToken<ArrayList<ArrayList<HashMap<String, Any>>>>() {}.type
         return gson.toJson(tableMap, type)
     }
 
     @TypeConverter
-    fun toMap(tableMapString: String?): ArrayList<ArrayList<HashMap<String, Boolean>>>? {
+    fun toMap(tableMapString: String?): ArrayList<ArrayList<HashMap<String, Any>>>? {
         if (tableMapString == null) {
             return null
         }
         val gson = Gson()
         val type: Type =
-            object : TypeToken<ArrayList<ArrayList<HashMap<String, Boolean>>>?>() {}.type
-        return gson.fromJson<ArrayList<ArrayList<HashMap<String, Boolean>>>>(tableMapString, type)
+            object : TypeToken<ArrayList<ArrayList<HashMap<String, Any>>>?>() {}.type
+        return gson.fromJson<ArrayList<ArrayList<HashMap<String, Any>>>>(tableMapString, type)
     }
 
 }

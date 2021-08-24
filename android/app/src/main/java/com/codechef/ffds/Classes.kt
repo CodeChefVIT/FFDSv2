@@ -4,6 +4,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import java.io.Serializable
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 data class User(
     val name: String,
@@ -11,37 +14,38 @@ data class User(
     val bio: String
 )
 
+enum class ItemType {
+    Sent, Received, Date
+}
+
+@Entity
 data class Chat(
-    val email: String,
-    val with: String,
-    val name: String,
-    val msg: String,
-    val time: String
+    @PrimaryKey(autoGenerate = false) val _id: String = "",
+    val conversationId: String,
+    val senderId: String,
+    val text: String,
+    @TypeConverters(DateConverter::class) val createdAt: Date,
+    @TypeConverters(DateConverter::class) val updatedAt: Date,
+    val type: ItemType
 )
 
 @Entity
 data class Profile(
-    @PrimaryKey(autoGenerate = false) val primaryKey: Int = 0,
+    @PrimaryKey(autoGenerate = false) val email: String = "",
+    val _id: String = "",
     val token: String = "",
+    val name: String = "",
+    val phone: String = "",
     val verified: Boolean = false,
     val branch: String = "",
     val gender: String = "",
     val bio: String = "",
     val year: String = "",
-    @TypeConverters(DataConverter::class) val expectations: List<String> = emptyList(),
-    @TypeConverters(MapConverter::class) val slot: ArrayList<ArrayList<HashMap<String, Boolean>>> = ArrayList(),
-    val name: String = "",
-    val email: String = "",
-    val phone: String = "",
-    val imagePath: String = "",
+    @TypeConverters(DataConverter::class) val expectations: ArrayList<String> = ArrayList(),
+    @TypeConverters(MapConverter::class) val slot: ArrayList<ArrayList<HashMap<String, Any>>> = ArrayList(),
     val userImage: String = "",
-    @TypeConverters(DataConverter::class) val chat: List<String> = emptyList(),
+    val userArray: ByteArray = byteArrayOf(),
 ) : Serializable
-
-data class ProfileResponse(
-    val message: String,
-    val user: Profile
-)
 
 data class Token(
     val message: String,
@@ -54,17 +58,27 @@ data class Feed(
 )
 
 data class Messages(
-    val lastMessage: String,
-    val profileImage: Int,
-    val name: String
+    val lastMessage: String = "",
+    val profileImage: Int = 0,
+    val name: String = "",
+    val id: String = "",
+    val conversationId: String = "",
+)
+
+@Entity
+data class Conversation(
+    @PrimaryKey(autoGenerate = false) val _id: String,
+    @TypeConverters(DataConverter::class) val members: ArrayList<String>,
+    @TypeConverters(DateConverter::class) val createdAt: Date,
+    @TypeConverters(DateConverter::class) val updatedAt: Date
 )
 
 class Slots {
 
-    fun getSlots(): ArrayList<ArrayList<HashMap<String, Boolean>>> {
+    fun getSlots(): ArrayList<ArrayList<HashMap<String, Any>>> {
 
-        val tableMap = ArrayList<ArrayList<HashMap<String, Boolean>>>()
-        var itemArray = ArrayList<HashMap<String, Boolean>>()
+        val tableMap = ArrayList<ArrayList<HashMap<String, Any>>>()
+        var itemArray = ArrayList<HashMap<String, Any>>()
 
         itemArray.add(map("A1/L1", false))
         itemArray.add(map("F1/L2", false))
@@ -156,7 +170,7 @@ class Slots {
         itemArray.add(map("X12/L73", false))
         itemArray.add(map("Y11/L74", false))
         itemArray.add(map("Y12/L75", false))
-        itemArray.add(map("L88", false))
+        itemArray.add(map("L76", false))
         itemArray.add(map("LUNCH", false))
         itemArray.add(map("X21/L77", false))
         itemArray.add(map("Z21/L78", false))
@@ -186,9 +200,10 @@ class Slots {
         return tableMap
     }
 
-    private fun map(key: String, value: Boolean): HashMap<String, Boolean> {
-        val hashMap = HashMap<String, Boolean>()
-        hashMap[key] = value
+    private fun map(key: String, value: Boolean): HashMap<String, Any> {
+        val hashMap = HashMap<String, Any>()
+        hashMap["name"] = key
+        hashMap["free"] = value
         return hashMap
     }
 }
