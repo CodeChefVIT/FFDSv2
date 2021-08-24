@@ -8,6 +8,7 @@ import signJWT from './functions/signJWT';
 import sendEmail from './functions/sendEmail';
 import slotMapper from '../services/slotMapper';
 import upload from '../services/imageUpload';
+import imageDelete from '../services/imageDelete';
 import config from '../config/config';
 
 interface MulterRequest extends Request {
@@ -524,15 +525,29 @@ const rejectMatch = async(req: Request, res: Response, next: NextFunction) =>{
       }
 }
 
-const imageUpload = (req: any , res: Response, next: NextFunction) =>{
+const imageUpload = async(req: any , res: Response, next: NextFunction) =>{
     logging.info(NAMESPACE,`Uploading an image`);
+    let id = res.locals.jwt.id;
+    let user = await User.findById(id).catch((err:any)=>{
+        return res.status(500).json(err);
+    })
+    console.log(user)
+    if(user.userImage.key!=="" || user.userImage.url!==""){
+        imageDelete(user.userImage.key, req, res, next);
+    }
     const singleUpload = upload(res).single('image');
     singleUpload(req, res, function(err:any) {
         if (err) {
           return res.status(422).send({errors: [{title: 'Image Upload Error', detail: err.message}]});
         }
-        console.log(req.file)
-        return res.json({'imageUrl': req.file.location});
+        try{
+            user.userImage.key = req.file.key;
+            user.userImage.url = req.file.location;
+            user.save();
+            return res.status(200).json({...user.userImage, message:"Image Uploaded Succesfully"});
+        }catch(err:any){
+            return res.status(500).send(err);
+        }
       });
 }
 

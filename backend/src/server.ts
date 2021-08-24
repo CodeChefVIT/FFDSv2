@@ -2,7 +2,9 @@ import http from 'http';
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import User from './models/User'
+import User from './models/User';
+import Conversation from './models/Conversation'
+import Message from './models/Message'
 import logging from './config/logging';
 import config from './config/config';
 import userRoutes from './routes/user';
@@ -70,6 +72,8 @@ try{
     mongoose
     .connect(config.database.mongo!,config.database.options,async()=>{
         await User.init();
+        await Conversation.init();
+        await Message.init();
         logging.info(NAMESPACE,"Database Connected"); 
     })
 }catch(err:any){

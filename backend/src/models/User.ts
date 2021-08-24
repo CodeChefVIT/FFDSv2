@@ -79,8 +79,14 @@ const UserSchema: Schema = new Schema({
         ]
     ],
     userImage:{
-        type:String,
-        default:""
+        key:{
+            type:String,
+            default:""
+        },
+        url:{
+            type:String,
+            default:""
+        }
     }
 },
 {

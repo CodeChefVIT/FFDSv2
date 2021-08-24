@@ -2,7 +2,7 @@ import aws from 'aws-sdk';
 import multerS3 from 'multer-s3';
 import multer from 'multer';
 import config from '../config/config';
-import {Request, Response, NextFunction} from 'express';
+import {Request, Response} from 'express';
 
 aws.config.update({
   accessKeyId: config.aws.id!,
@@ -29,7 +29,11 @@ const upload = (res:Response) => multer({
       cb(null, {profileImage: 'FFDS Profile Image'});
     },
     key: (req, file, cb) => {
-      cb(null, res.locals.jwt.id)
+      if(file.mimetype==='image/jpeg'){
+        cb(null, "files_from_node/ffds-"+res.locals.jwt.id+".jpeg")
+      }else if(file.mimetype==='image/png'){
+        cb(null, "files_from_node/ffds-"+res.locals.jwt.id+".png")
+      }
     }
   })
 });
