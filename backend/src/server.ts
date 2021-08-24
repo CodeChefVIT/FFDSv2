@@ -68,7 +68,7 @@ app.use((req, res, next) => {
 // Database Connection
 try{
     mongoose
-    .connect(config.database.mongo,config.database.options,async()=>{
+    .connect(config.database.mongo!,config.database.options,async()=>{
         await User.init();
         logging.info(NAMESPACE,"Database Connected"); 
     })
@@ -83,6 +83,7 @@ let io = require('./socket/socket').initialize(httpServer);
 app.locals.io = io
 let users : any[] = [];
 let usersToVerify : any[] = [];
+let usersBlocked : any[] = [];
 
 app.locals.users = usersToVerify;
 
@@ -97,7 +98,7 @@ const removeUser = (socketId:String) =>{
 
 const getUser = (userId:String) => {
     return users.find((user) => user.userId === userId);
-  };
+};
 
 const addUserVerify = (email:String,socketId:String) =>{
     !app.locals.users.some((user:any)=> user.email === email) &&
@@ -108,6 +109,18 @@ const removeUserVerify = (socketId:String) =>{
     app.locals.users = app.locals.users.filter((user:any)=>user.socketId !== socketId)
 }
 
+const addUserBlocked = (userId:String, socketId:String) =>{
+    !usersBlocked.some(user=> user.userId === userId) &&
+    usersBlocked.push({userId,socketId});
+}
+
+const removeUserBlocked = (socketId:String) =>{
+    usersBlocked = usersBlocked.filter(user=>user.socketId !== socketId)
+}
+
+const getUserBlocked = (userId:String) => {
+    return usersBlocked.find((user) => user.userId === userId);
+};
 
 
 io.on("connection",(socket:any)=>{
@@ -123,20 +136,33 @@ io.on("connection",(socket:any)=>{
         addUserVerify(email, socket.id)
     })
 
+    socket.on("block", (blockerId:String, blockedId:String)=>{
+        logging.info(NAMESPACE,"Terminating Socket Messaging on Block");
+        addUserBlocked(blockerId, socket.id);
+        const user = getUser(blockedId);
+        io.to(user.socketId).emit("getBlocked", {
+            "blocked":true
+        });
+    })
+
     socket.on("sendMessage", (senderId:String, receiverId:String, text:String, createdAt:Date) => {
         logging.info(NAMESPACE,"Sending a Message",{senderId,receiverId,text,createdAt});
         const user = getUser(receiverId);
-        io.to(user.socketId).emit("getMessage", {
-          senderId,
-          text,
-          createdAt
-        });
+        const hasBlocked = getUserBlocked(receiverId);
+        if(hasBlocked === null || hasBlocked === undefined){
+            io.to(user.socketId).emit("getMessage", {
+              senderId,
+              text,
+              createdAt
+            });
+        }
       });
 
     socket.on("disconnect",()=>{
         logging.info(NAMESPACE,"A User Disconnected");
         removeUser(socket.id);
         removeUserVerify(socket.id);
+        removeUserBlocked(socket.id)
         io.emit("getUsers",users)
     })
 })
