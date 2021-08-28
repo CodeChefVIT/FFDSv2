@@ -3,17 +3,16 @@ import process from "process";
 dotenv.config();
 
 const SERVER_HOSTNAME = process.env.SERVER_HOSTNAME || 'localhost';
-const SERVER_PORT = process.env.PORT || 1337;
-const SERVER_TOKEN_EXPIRETIME = process.env.EXPIRETIME || 3600;
-const SERVER_TOKEN_ISSUER = process.env.ISSUER || "JustAnIssuer";
-const SERVER_TOKEN_SECRET = process.env.SECRET || "GoodLuckWithTheSecret"; 
-const DATABASE_URL =  process.env.DB_CONNECT || "URI";
-const MAIL_USERNAME = process.env.MAIL_USERNAME || "username";
-const MAIL_PASSWORD = process.env.MAIL_PASSWORD || "password";
-interface mail {
-    user: string;
-    pass: string;
-}
+const SERVER_PORT = process.env.PORT || 4000;
+const SERVER_TOKEN_EXPIRETIME_LONG = 0;
+const SERVER_TOKEN_EXPIRETIME_DAY = 864;
+const SERVER_TOKEN_ISSUER = process.env.ISSUER || "CodeChef-VIT";
+const SERVER_TOKEN_SECRET = process.env.SECRET; 
+const DATABASE_URL =  process.env.DB_CONNECT;
+const MAIL_USERNAME = process.env.MAIL_USERNAME;
+const MAIL_PASSWORD = process.env.MAIL_PASSWORD;
+const ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
+const SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
 
 const DATABASE_OPTIONS = {
     useNewUrlParser: true,
@@ -26,7 +25,8 @@ const SERVER = {
     hostname: SERVER_HOSTNAME,
     port: SERVER_PORT,
     token:{
-        expireTime: SERVER_TOKEN_EXPIRETIME,
+        expireTimeLong: SERVER_TOKEN_EXPIRETIME_LONG,
+        expireTimeDay: SERVER_TOKEN_EXPIRETIME_DAY,
         issuer: SERVER_TOKEN_ISSUER,
         secret: SERVER_TOKEN_SECRET
     }
@@ -37,7 +37,12 @@ const DATABASE = {
     options: DATABASE_OPTIONS
 }
 
-const MAIL: mail = {
+const AWS = {
+    id : ACCESS_KEY_ID,
+    key : SECRET_ACCESS_KEY
+}
+
+const MAIL = {
     user: MAIL_USERNAME,
     pass: MAIL_PASSWORD
 }
@@ -45,7 +50,8 @@ const MAIL: mail = {
 const config = {
     server: SERVER,
     database: DATABASE,
-    mail: MAIL
+    mail: MAIL,
+    aws: AWS
 }
 
 export default config;

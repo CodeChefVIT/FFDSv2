@@ -3,16 +3,15 @@ import controller from '../controllers/conversation';
 import auth from '../middleware/auth'
 const router = express.Router();
 
-//new conv
 
-router.post("/", controller.createNewConversation);
-
-//get conv of a user
+router.post("/", auth, controller.createNewConversation);
 
 router.get("/", auth, controller.getConversationOfUser);
 
-// get conv includes two userId
-
 router.get("/find/:userId", auth, controller.getPairConversation);
+
+router.get("/block/:userId", auth, controller.block);
+
+router.get("/unblock/:userId", auth, controller.unBlock);
 
 export = router;

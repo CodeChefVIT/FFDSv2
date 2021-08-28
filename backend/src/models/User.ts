@@ -12,6 +12,28 @@ const UserSchema: Schema = new Schema({
         required: true,
         trim:true,
     },
+    genderPreference:{
+        type: String,
+        default:"none"
+    },
+    accepted:[
+        {
+            type: String,
+            default: ""
+        }
+    ],
+    rejected:[
+        {
+            type: String,
+            default: ""
+        }
+    ],
+    blocked:[
+        {
+            type: String,
+            default: ""
+        }
+    ],
     verified:{
         type:Boolean,
         default:false
@@ -57,8 +79,14 @@ const UserSchema: Schema = new Schema({
         ]
     ],
     userImage:{
-        type:String,
-        default:""
+        key:{
+            type:String,
+            default:""
+        },
+        url:{
+            type:String,
+            default:""
+        }
     }
 },
 {
