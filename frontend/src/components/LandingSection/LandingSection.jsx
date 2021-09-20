@@ -9,13 +9,21 @@ import hands from "../LandingSection/hands.svg";
 import insta from "../LandingSection/2.svg";
 import fb from "../LandingSection/3.svg";
 
+import { useHistory } from "react-router";
+
 const LandingSection = () => {
+
+  let history = useHistory();
+  const GotoButton =()=>{
+    history.push("/Moreinfo")
+  }
+
   return (
     <section id="landing">
       <main className="landing">
         <article>
           <h2 className="main-heading">
-            FULLY FLEXIBLE <span className="purple">DATing </span> system
+            FULLY FLEXIBLE <span className="purple">Dating </span> System
           </h2>
           <h3 className="sub-heading">
             <img src={heart} class="main-heart"></img>
@@ -29,7 +37,7 @@ const LandingSection = () => {
         <div className="highlight3">Make trustful relations</div>
       </main>
       <main className="started">
-        <button className="button">Get started</button>
+        <Link><button className="button" to="/Moreinfo">Get started</button></Link>
         <article className="started-main">
           <h2 className="started-content">
             Lorem ipsum dolor sit amet.<br></br>
