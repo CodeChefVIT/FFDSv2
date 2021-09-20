@@ -135,6 +135,12 @@ footer{
     font-size: 2rem;
     border-radius: 20px;
     cursor: pointer;
+    transition: all 0.15s ease-in;
+}
+.button:hover{
+    color:white;
+    text-decoration: none;
+    
 }
 .landingsvg{
     width:30%;

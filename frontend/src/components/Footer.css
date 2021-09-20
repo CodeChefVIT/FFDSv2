@@ -1,8 +1,7 @@
 .footer{
     padding:20px ;
     color:white;
-    background-color:#E31A6C;
-
+    background-color:black;
 }
 #footermsg{
      display: flex;
@@ -11,7 +10,7 @@
     padding-top:10px;  
    
 }
- .social-icons img{
+.social-icons img{
     
 
 height:50px;
@@ -26,4 +25,54 @@ width:50px;
 }
 .cl >h4{
     color:white !important;
+    font-size: 2.5rem;
+}
+
+/*Modified Code*/
+.footer-content{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+.socials{
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1 rem 0 3rem 0;
+    padding: 15px;
+}
+.socials li{
+    margin: 0 10px;
+}
+.socials a{
+    text-decoration: none;
+    color: #fff;
+}
+.socials a i{
+    font-size: 2rem;
+    transition: color .4s ease;
+}
+.socials a:hover i{
+    color: aqua;
+}
+.footer-bottom{
+    background: #000;
+    width: 100vw;
+    padding: 20px 0;
+    text-align: center;
+}
+.footer-bottom p{
+    font-size: 1.2rem;
+    word-spacing: 2px;
+    text-transform: capitalize;
+}
+
+.footer-bottom span{
+    text-transform: uppercase;
+    font-weight: 200;
+    color: #FE0074;
+    text-decoration: none;
 }

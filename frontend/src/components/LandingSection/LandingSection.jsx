@@ -9,14 +9,9 @@ import hands from "../LandingSection/hands.svg";
 import insta from "../LandingSection/2.svg";
 import fb from "../LandingSection/3.svg";
 
-import { useHistory } from "react-router";
+import {Link} from "react-router-dom";
 
 const LandingSection = () => {
-
-  let history = useHistory();
-  const GotoButton =()=>{
-    history.push("/Moreinfo")
-  }
 
   return (
     <section id="landing">
@@ -37,7 +32,7 @@ const LandingSection = () => {
         <div className="highlight3">Make trustful relations</div>
       </main>
       <main className="started">
-        <Link><button className="button" to="/Moreinfo">Get started</button></Link>
+        <Link className="button" to="/Moreinfo">Get started</Link>
         <article className="started-main">
           <h2 className="started-content">
             Lorem ipsum dolor sit amet.<br></br>
