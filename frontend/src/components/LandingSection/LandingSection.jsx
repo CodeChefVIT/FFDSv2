@@ -29,9 +29,11 @@ const LandingSection = () => {
       <main className="highlights">
         <div className="highlight1">The best dating site</div>
         <div className="highlight2">Meet new people</div>
+        
         <div className="highlight3">Make trustful relations</div>
       </main>
       <main className="started">
+        <h2 className="started-title">How To Use FFDS ?</h2>
         <Link className="button" to="/Moreinfo">Get started</Link>
         <article className="started-main">
           <h2 className="started-content">
@@ -61,6 +63,7 @@ const LandingSection = () => {
           </h2>
           <img src={hands} class="handssvg"></img>
         </article>
+        <Link className="button" to="/Moreinfo">Get started</Link>
       </main>
     </section>
   );

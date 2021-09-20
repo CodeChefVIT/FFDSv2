@@ -10,7 +10,6 @@
     display: flex;
     align-items:center;
     justify-content: center;
-
 }
 .highlight2{
     background-color:#ED3B9D;
@@ -62,6 +61,10 @@
     font-size: 1.75rem;
     margin:0;
     color: #FFFFFF;
+}
+.started-title{
+    color: #fff;
+    font-size: 3rem;
 }
 .faq-content{
     margin-left:60px;
@@ -136,6 +139,7 @@ footer{
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.15s ease-in;
+    margin-top: 40px;
 }
 .button:hover{
     color:white;
