@@ -6,6 +6,7 @@ import QnA from "./components/QnA.js";
 import Moreinfo from "./Pages/Moreinfo.js";
 import Account from "./Pages/Account.js";
 import Match from "./Pages/Match.js";
+import LandingSection from "./components/LandingSection/LandingSection";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 function App() {
@@ -17,8 +18,9 @@ function App() {
   return (
     <>
       <Navbar toggle={(gaga) => setIslogin(gaga)}></Navbar>
+      {/* <LandingSection/> */}
       {loggedin ? (
-        <Moreinfo></Moreinfo>
+        <LandingSection/>
       ) : (
         <Account switch={islogin} toggle={(gaga) => setIslogin(gaga)}></Account>
       )}
