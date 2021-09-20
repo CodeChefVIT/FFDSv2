@@ -19,7 +19,7 @@ body{
 }
 
 .navbar-nav li{
-  padding:0 100px;
+  padding:0 15px;
   font-size: 15px;
 }
 .navbar-nav li a{

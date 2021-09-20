@@ -21,7 +21,7 @@ function Navbar(props) {
               <a class="nav-link" href="/#signup" onClick={() => props.toggle(false)}>Sign up</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/#login" onClick={() => props.toggle(true)}>LOGIN</a>
+              <a class="nav-link" href="/#login" onClick={() => props.toggle(true)}>Login</a>
             </li>
           </ul>
         </div>

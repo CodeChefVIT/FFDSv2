@@ -6,7 +6,13 @@ import QnA from "./components/QnA.js";
 import Moreinfo from "./Pages/Moreinfo.js";
 import Account from "./Pages/Account.js";
 import Match from "./Pages/Match.js";
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import LandingSection from "./components/LandingSection/LandingSection";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
 function App() {
   const [islogin, setIslogin] = useState(true);
@@ -16,21 +22,30 @@ function App() {
   const [loggedin, setLoggedin] = useState(true);
   return (
     <>
+    <Router>
       <Navbar toggle={(gaga) => setIslogin(gaga)}></Navbar>
-      {loggedin ? (
-        <Moreinfo></Moreinfo>
-      ) : (
-        <Account switch={islogin} toggle={(gaga) => setIslogin(gaga)}></Account>
-      )}
+      <Switch>
+          <Route exact path="/Moreinfo">
+            <Moreinfo/>
+          </Route>
+          <Route exact path="/">
+            {loggedin ? (
+              <LandingSection/>
+            ) : (
+              <Account switch={islogin} toggle={(gaga) => setIslogin(gaga)}></Account>
+            )}
 
-      <div className="question">
-        <QnA></QnA>
-        {/* <Match></Match> */}
-      </div>
+          <div className="question">
+            <QnA></QnA>
+            {/* <Match></Match> */}
+          </div>
 
-      <div className="footer">
-        <Footer></Footer>
-      </div>
+          <div className="footer">
+            <Footer></Footer>
+          </div>
+        </Route>
+      </Switch>    
+    </Router>
     </>
   );
 }
