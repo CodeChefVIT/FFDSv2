@@ -4,6 +4,8 @@ import Button from "react-bootstrap/Button";
 import '../components/Login.css';
 import './Moreinfo.css';
 import '../components/ProfileSection/ProfileSection.css';
+import {Link} from "react-router-dom";
+import Matches from "./Matches";
 
  function Moreinfo() {
     const [email, setEmail] = useState("");
@@ -78,10 +80,11 @@ import '../components/ProfileSection/ProfileSection.css';
               onChange={(e) => setPassword(e.target.value)}
             />
           </Form.Group>
-          
+          <Link to="/Matches">
           <Button className="moreinfobutton" block size="lg" type="submit" disabled={!validateForm()}>
             Submit
           </Button>
+          </Link>
         </Form>
       </div>
       </>

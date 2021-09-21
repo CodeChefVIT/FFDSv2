@@ -7,6 +7,7 @@ import Moreinfo from "./Pages/Moreinfo.js";
 import Account from "./Pages/Account.js";
 import Match from "./Pages/Match.js";
 import LandingSection from "./components/LandingSection/LandingSection";
+import Matches from "./Pages/Matches";
 import {
   BrowserRouter as Router,
   Switch,
@@ -27,6 +28,9 @@ function App() {
       <Switch>
           <Route exact path="/Moreinfo">
             <Moreinfo/>
+          </Route>
+          <Route exact path="/Matches">
+            <Matches/>
           </Route>
           <Route exact path="/">
             {loggedin ? (
