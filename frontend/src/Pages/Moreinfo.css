@@ -8,6 +8,16 @@ body{
 .MoreInfoProfile{
     background-color: #FE0074;
 }
+.img-div{
+    height: "60px";
+    width: "60px";
+    
+}
+.uploadImg{
+    width: "100%";
+    height: "100%";
+    position: "absolute";
+}
 .MoreInfoForm label{
     color: #ED3B9D;
     font-size: 1.3rem;

@@ -1,72 +1,55 @@
-import React, { useState } from "react";
+import React from "react";
+import { useState } from "react";
 import '../components/Login.css';
 import './Moreinfo.css';
-// import Footer from "../components/Footer";
-// import '../components/ProfileSection/ProfileSection.css';
+import ReactDOM from "react-dom";
 
 function Moreinfo() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function validateForm() {
-    return email.length > 0 && password.length > 0;
-  }
-
   function handleSubmit(event) {
     event.preventDefault();
   }
+  //Uploading Profile Pic
+  const uploadedImage = React.useRef(null);
+  const imageUploader = React.useRef(null);
+
+  const handleImageUpload = e => {
+    const [file] = e.target.files;
+    if (file) {
+      const reader = new FileReader();
+      const { current } = uploadedImage;
+      current.file = file;
+      reader.onload = e => {
+        current.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <>
       <div className="MoreInfoTitle my-4">
         <h2 className="text-center">Tell Us About Yourself !</h2>
       </div>
-      {/* <div className="container MoreInfoForm">
-        <form>
-          <div className="form-floating mb-3">
-            <input type="text" className="form-control" id="floatingInput" placeholder="Khush Sharma" />
-            <label for="floatingInput">Full Name</label>
-          </div>
-          <div className="mb-3">
-            <label for="exampleFormControlTextarea1" className="form-label">Hobbies/Something About Yourself: </label>
-            <textarea className="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Share a few lines about yourself"></textarea>
-          </div>
-          <div className="mb-3">
-            <label for="exampleFormControlTextarea1" className="form-label">What Qualities Do You Seek in Your Match?</label>
-            <textarea className="form-control" id="exampleFormControlTextarea1" rows="3" Placeholder="Mention Points"></textarea>
-          </div>
-
-          <div className="mb-3">
-            <label for="autoSizingSelect">Select Your Gender</label>
-            <select className="form-select" id="autoSizingSelect">
-              <option selected>Choose Your Gender...</option>
-              <option value="1">Male</option>
-              <option value="2">Female</option>
-              <option value="3">Other</option>
-            </select>
-          </div>
-
-          <div className="form-floating my-4">
-            <input type="numbers" className="form-control" id="floatingPassword" placeholder="Phone" />
-            <label for="floatingPassword">Contact Number</label>
-          </div>
-
-          <div className="mb-4">
-            <label for="formFile" className="form-label">TimeTable Upload:</label>
-            <input className="form-control" type="file" id="formFile"/>
-          </div>
-
-          <div className="col-14">
-            <button type="submit" className="btn btn-primary">Submit</button>
-          </div>
-        </form>
-      </div> */}
 
       <div className="container MoreInfoProfile">
         <form method=" ">
           <div className="row">
-            <div className="col-md-4 mt-5 mb-3 mx-3">
-              <img src="https://source.unsplash.com/user/erondu/300x300" className="img-rounded" alt="DP" />
+            <div className="col-md-4 mt-4 mb-3 mx-3 img-div">
+              <input type="file" accept="image/*" onChange={handleImageUpload} ref={imageUploader} style={{ display:"none" }} />
+              <div className="img-div" onClick={() => imageUploader.current.click()}>
+                <img
+                  src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                  ref={uploadedImage}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    position: "absolute",
+                  }}
+                />
+              </div>
             </div>
 
             <div className="col-md-6 mt-3">
