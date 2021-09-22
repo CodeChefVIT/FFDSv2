@@ -37,7 +37,6 @@ function App() {
 
           <div className="question">
             <QnA></QnA>
-            {/* <Match></Match> */}
           </div>
 
           <div className="footer">

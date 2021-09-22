@@ -226,7 +226,7 @@ footer{
     font-size:1.5rem;
     outline: none;
     background-color: #FFFFFF;
-    margin-top:3rem;
+    /* margin-top:3rem; */
 }
 
 .container {

@@ -1,3 +1,18 @@
+body{
+    background-color: rgb(26, 15, 15);
+}
+.MoreInfoTitle{
+    color: white;
+    font-size: 2.5rem;
+}
+.MoreInfoProfile{
+    background-color: #FE0074;
+}
+.MoreInfoForm label{
+    color: #ED3B9D;
+    font-size: 1.3rem;
+}
+
 .infomsg{
     padding-left:100px;
     padding-top:30px;

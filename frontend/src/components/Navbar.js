@@ -1,5 +1,6 @@
 import './Navbar.css';
 import { FaHome, FaBars } from "react-icons/fa";
+import { Link } from 'react-router-dom'
 
 function Navbar(props) {
   
@@ -18,7 +19,7 @@ function Navbar(props) {
               <a class="nav-link " aria-current="page" href="/#home">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/#signup" onClick={() => props.toggle(false)}>Sign up</a>
+              <Link className="nav-link active" aria-current="page" to="/Moreinfo">Profile</Link>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/#login" onClick={() => props.toggle(true)}>Login</a>
