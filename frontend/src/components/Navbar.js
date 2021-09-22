@@ -22,6 +22,9 @@ function Navbar(props) {
               <Link className="nav-link active" aria-current="page" to="/Moreinfo">Profile</Link>
             </li>
             <li class="nav-item">
+              <Link className="nav-link active" aria-current="page" to="/Matches">Matches</Link>
+            </li>
+            <li class="nav-item">
             <Link className="nav-link active" aria-current="page" to="/">Chats</Link>
             </li>
           </ul>

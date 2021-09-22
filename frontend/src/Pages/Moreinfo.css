@@ -7,11 +7,12 @@ body{
 }
 .MoreInfoProfile{
     background-color: #FE0074;
+    margin-bottom: 6.5rem;
 }
 .img-div{
     height: "60px";
     width: "60px";
-    
+
 }
 .uploadImg{
     width: "100%";
