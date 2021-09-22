@@ -1,5 +1,6 @@
 import './Navbar.css';
 import { FaHome, FaBars } from "react-icons/fa";
+import { Link } from 'react-router-dom'
 
 function Navbar(props) {
   
@@ -15,13 +16,16 @@ function Navbar(props) {
           <ul class="navbar-nav ml-auto">
             <li class="nav-item">
               <FaHome className="iconhome" size="40px" color="white"  style={{ padding: "0px 0px  10px 0px" }} />
-              <a class="nav-link " aria-current="page" href="/#home">Home</a>
+              <Link className="nav-link active" aria-current="page" to="/">Home</Link>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/#signup" onClick={() => props.toggle(false)}>Sign up</a>
+              <Link className="nav-link active" aria-current="page" to="/Moreinfo">Profile</Link>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/#login" onClick={() => props.toggle(true)}>Login</a>
+              <Link className="nav-link active" aria-current="page" to="/Matches">Matches</Link>
+            </li>
+            <li class="nav-item">
+            <Link className="nav-link active" aria-current="page" to="/">Chats</Link>
             </li>
           </ul>
         </div>
