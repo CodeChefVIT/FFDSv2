@@ -153,7 +153,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="75dp"
         android:textColor="@android:color/white"
-        android:text="SUBMIT"
+        android:text="@string/submit"
         android:id="@+id/submit_btn"
         android:textSize="20sp"
         android:fontFamily="@font/roboto_medium"

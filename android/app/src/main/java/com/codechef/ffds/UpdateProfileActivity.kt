@@ -40,7 +40,6 @@ class UpdateProfileActivity : AppCompatActivity() {
     lateinit var viewModel: UserViewModel
     var user = Profile()
     private val tags = ArrayList<String>()
-    private var image = ""
     private var imageArray = byteArrayOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,7 +124,6 @@ class UpdateProfileActivity : AppCompatActivity() {
                         name = yourName.text.toString().trim(),
                         phone = phoneNoEdit.text.toString(),
                         expectations = tags,
-                        userImage = image,
                         userArray = imageArray,
                     )
                 )

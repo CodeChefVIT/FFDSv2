@@ -5,6 +5,7 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -28,22 +31,22 @@ import retrofit2.Response;
 
 public class MessagesFragment extends Fragment {
 
-    ArrayList<Conversation> conversations;
-    ArrayList<Messages> messages = new ArrayList<>();
-    ArrayList<Messages> matches = new ArrayList<>();
+    private ArrayList<Conversation> conversations = new ArrayList<>();
+    private ArrayList<Messages> messages = new ArrayList<>();
+    private ArrayList<Messages> matches = new ArrayList<>();
 
-    ArrayList<Profile> profiles = new ArrayList<>();
-    ArrayList<Chat> chats = new ArrayList<>();
+    private ArrayList<Profile> profiles = new ArrayList<>();
+    private ArrayList<Chat> chats = new ArrayList<>();
 
-    TextView noMatches;
-    TextView noMessages;
-    RecyclerView recyclerView;
-    MessageAdapter matchAdapter;
-    RecyclerView recyclerView1;
-    MessageAdapter messageAdapter;
+    private TextView noMatches;
+    private TextView noMessages;
+    private RecyclerView recyclerView;
+    private MessageAdapter matchAdapter;
+    private RecyclerView recyclerView1;
+    private MessageAdapter messageAdapter;
 
-    Profile user;
-    UserViewModel viewModel;
+    private Profile user;
+    private UserViewModel viewModel;
 
     @Nullable
     @Override
@@ -141,23 +144,31 @@ public class MessagesFragment extends Fragment {
 
     private void updateData(Profile user) {
 
-        Api.INSTANCE.getRetrofitService().getAllConversations(user.getToken()).enqueue(new Callback<>() {
+        Api.INSTANCE.getRetrofitService().getAllConversations(user.getToken()).enqueue(new Callback<ConversationList>() {
             @Override
-            public void onFailure(@NotNull Call<ArrayList<Conversation>> call, @NotNull Throwable t) {
+            public void onFailure(@NonNull Call<ConversationList> call, @NonNull Throwable t) {
                 Toast.makeText(getContext(), "All Conversation: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onResponse(@NotNull Call<ArrayList<Conversation>> call, @NotNull Response<ArrayList<Conversation>> response) {
+            public void onResponse(@NonNull Call<ConversationList> call, @NonNull Response<ConversationList> response) {
                 if (response.message().equals("OK")) {
-                    conversations = response.body();
-                    if (conversations != null) {
-                        profiles.clear();
-                        chats.clear();
-                        getData(user, 0);
+                    ConversationList conversationList = response.body();
+                    if (conversationList != null) {
+                        conversations.addAll(conversationList.getMatchedOnly());
+                        conversations.addAll(conversationList.getHasMessages());
+                        if(!conversations.isEmpty()) {
+                            Log.d("myTag", conversations.toString());
+                            profiles.clear();
+                            chats.clear();
+                            getData(user, 0);
+                        }
                     }
-                } else
-                    Toast.makeText(requireContext(), "Conversations: " + response.message(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Gson gson = new Gson();
+                    Error error = gson.fromJson(response.errorBody().charStream(), Error.class);
+                    Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

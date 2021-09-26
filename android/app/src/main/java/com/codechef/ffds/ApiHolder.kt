@@ -41,53 +41,105 @@ interface ApiHolder {
     @POST("user/login")
     fun login(@FieldMap fields: Map<String, String>): Call<Token?>?
 
+    @FormUrlEncoded
+    @POST("user/email/verify")
+    fun sendVerificationEmail(
+        @Field("email") email: String?
+    ): Call<ResponseBody?>?
+
+    @FormUrlEncoded
+    @POST("user/email/password")
+    fun forgotPassword(
+        @Field("email") email: String?
+    ): Call<ResponseBody?>?
+
+    @FormUrlEncoded
+    @POST("user/reset")
+    fun resetPassword(
+        @Field("id") userId: String?,
+        @Field("password") password: String?
+    ): Call<ResponseBody?>?
+
     @PUT("user/update")
     fun update(
-        @Header("Authorization") header: String?,
+        @Header("Authorization") token: String?,
         @Body fields: RequestBody
     ): Call<ResponseBody?>?
 
-    @GET("user/details")
-    fun getUserDetail(@Query("id") id: String): Call<Profile?>?
-
     @GET("user/profile")
     fun profileView(
-        @Header("Authorization") header: String?,
+        @Header("Authorization") token: String?,
     ): Call<Profile?>?
 
-    @POST("user/send/verification/link?mailto=axil.ishan3@gmail.com")
-    fun sendMail(): Call<ResponseBody?>?
+    @GET("user/details")
+    fun getUserDetail(
+        @Query("id") id: String?
+    ): Call<Profile?>?
 
     @POST("user/slot")
     @FormUrlEncoded
-    fun getSlots(
+    fun slotMapper(
         @Field("Slots") slot: ArrayList<String>
     ): ArrayList<ArrayList<HashMap<String, Any>>>?
 
-    @FormUrlEncoded
-    @GET("user/showfeed")
-    fun showFeed(
-        @Header("Authorization") header: String?,
-        @Field("gender") gender: String?,
-        @Field("slot") slot: String?
+    @GET("user/feed")
+    fun getFeed(
+        @Header("Authorization") token: String?,
     ): Call<Feed?>?
+
+    @GET("user/reject/{userId}")
+    fun rejectMatch(
+        @Header("Authorization") token: String?,
+        @Path("userId") userId: String?
+    ): Call<ResponseBody>?
+
+    @POST("user/image")
+    @Multipart
+    fun uploadImage(
+        @Header("Authorization") token: String?,
+        @Part file: MultipartBody.Part
+    ): Call<Image?>?
 
     @FormUrlEncoded
     @POST("conversation")
-    fun createConversation(@FieldMap fields: Map<String, String>): Call<ResponseBody?>?
+    fun createNewConversation(
+        @Header("Authorization") token: String?,
+        @Field("userId") userId: String?
+    ): Call<Conversation?>?
 
     @GET("conversation")
-    fun getAllConversations(@Header("Authorization") header: String?): Call<ArrayList<Conversation>?>?
+    fun getAllConversations(
+        @Header("Authorization") token: String?
+    ): Call<ConversationList?>?
 
     @GET("conversation/find/{userId}")
     fun getSpecificConversation(
-        @Header("Authorization") header: String?,
-        @Path("userId") userId: String
+        @Header("Authorization") token: String?,
+        @Path("userId") userId: String?
     ): Call<Conversation?>?
+
+    @GET("conversation/block/{userId}")
+    fun blockUser(
+        @Header("Authorization") token: String?,
+        @Path("userId") userId: String?
+    ): Call<ResponseBody>?
+
+    @GET("conversation/unblock/{userId}")
+    fun unBlockUser(
+        @Header("Authorization") token: String?,
+        @Path("userId") userId: String?
+    ): Call<Conversation?>?
+
+    @FormUrlEncoded
+    @POST("message")
+    fun sendMessage(
+        @Header("Authorization") token: String?,
+        @FieldMap fields: Map<String, Any>
+    ): Call<ResponseBody?>?
 
     @GET("message/{conversationId}")
     fun getAllMessages(
-        @Header("Authorization") header: String?,
+        @Header("Authorization") token: String?,
         @Path("conversationId") conversationId: String
     ): Call<ArrayList<Chat>?>?
 
@@ -95,13 +147,6 @@ interface ApiHolder {
     fun getLastMessage(
         @Path("userId") userId: String
     ): Call<Chat?>?
-
-    @FormUrlEncoded
-    @POST("message")
-    fun sendMessage(
-        @Header("Authorization") header: String?,
-        @FieldMap fields: Map<String, Any>
-    ): Call<ResponseBody?>?
 
 }
 

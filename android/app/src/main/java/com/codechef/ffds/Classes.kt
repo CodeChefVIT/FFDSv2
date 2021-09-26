@@ -43,9 +43,18 @@ data class Profile(
     val year: String = "",
     @TypeConverters(DataConverter::class) val expectations: ArrayList<String> = ArrayList(),
     @TypeConverters(MapConverter::class) val slot: ArrayList<ArrayList<HashMap<String, Any>>> = ArrayList(),
-    val userImage: String = "",
+    @TypeConverters(ImageTypeConverter::class) val userImage: Image = Image(),
     val userArray: ByteArray = byteArrayOf(),
+    val genderPreference: String = "none",
+    @TypeConverters(DataConverter::class) val accepted: ArrayList<String> = ArrayList(),
+    @TypeConverters(DataConverter::class) val rejected: ArrayList<String> = ArrayList(),
+    @TypeConverters(DataConverter::class) val blocked: ArrayList<String> = ArrayList(),
 ) : Serializable
+
+data class Error(
+    val err: Boolean,
+    val message: String,
+)
 
 data class Token(
     val message: String,
@@ -53,8 +62,18 @@ data class Token(
 )
 
 data class Feed(
-    val message: String,
-    val payload: ArrayList<Profile>
+    val feed: ArrayList<Profile>,
+)
+
+data class Image(
+    val key: String = "",
+    val url: String = "",
+    val message: String = ""
+)
+
+data class ConversationList(
+    val matchedOnly: ArrayList<Conversation>,
+    val hasMessages: ArrayList<Conversation>
 )
 
 data class Messages(
@@ -67,8 +86,11 @@ data class Messages(
 
 @Entity
 data class Conversation(
-    @PrimaryKey(autoGenerate = false) val _id: String,
     @TypeConverters(DataConverter::class) val members: ArrayList<String>,
+    @PrimaryKey(autoGenerate = false) val _id: String,
+    val matched: Boolean,
+    val blocked: Boolean,
+    val hasMessages: Boolean,
     @TypeConverters(DateConverter::class) val createdAt: Date,
     @TypeConverters(DateConverter::class) val updatedAt: Date
 )
