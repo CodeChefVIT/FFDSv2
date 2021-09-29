@@ -4,6 +4,10 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,11 +23,14 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -87,6 +94,8 @@ public class MessagesFragment extends Fragment {
             startActivity(intent);
         });
 
+        showHideViews();
+
         viewModel = new ViewModelProvider(this, new UserViewModelFactory(getActivity().getApplication())).get(UserViewModel.class);
 
         SharedPreferences prefs = getContext().getSharedPreferences("MY PREFS", MODE_PRIVATE);
@@ -111,30 +120,12 @@ public class MessagesFragment extends Fragment {
                     if (profile != null) {
                         viewModel.getLastMessage(conversation.get_id()).observe(getViewLifecycleOwner(), chat -> {
                             if (chat == null)
-                                matches.add(new Messages("", R.drawable.re, profile.getName(), profile.get_id(), conversation.get_id()));
+                                matches.add(new Messages("", profile.getUserArray(), profile.getName(), profile.get_id(), conversation.get_id()));
                             else
-                                messages.add(new Messages(chat.getText(), R.drawable.re, profile.getName(), profile.get_id(), conversation.get_id()));
+                                messages.add(new Messages(chat.getText(), profile.getUserArray(), profile.getName(), profile.get_id(), conversation.get_id()));
 
-                            if (messages.size() + matches.size() == conversations.size()) {
-
-                                if (matches.isEmpty()) {
-                                    noMatches.setVisibility(View.VISIBLE);
-                                    recyclerView.setVisibility(View.GONE);
-                                } else {
-                                    matchAdapter.submitList(matches);
-                                    recyclerView.setVisibility(View.VISIBLE);
-                                    noMatches.setVisibility(View.GONE);
-                                }
-
-                                if (messages.isEmpty()) {
-                                    noMessages.setVisibility(View.VISIBLE);
-                                    recyclerView1.setVisibility(View.GONE);
-                                } else {
-                                    messageAdapter.submitList(messages);
-                                    recyclerView1.setVisibility(View.VISIBLE);
-                                    noMessages.setVisibility(View.GONE);
-                                }
-                            }
+                            if (messages.size() + matches.size() == conversations.size())
+                                showHideViews();
                         });
                     }
                 });
@@ -158,7 +149,6 @@ public class MessagesFragment extends Fragment {
                         conversations.addAll(conversationList.getMatchedOnly());
                         conversations.addAll(conversationList.getHasMessages());
                         if(!conversations.isEmpty()) {
-                            Log.d("myTag", conversations.toString());
                             profiles.clear();
                             chats.clear();
                             getData(user, 0);
@@ -190,7 +180,7 @@ public class MessagesFragment extends Fragment {
                 if (response.message().equals("OK")) {
                     Profile profile = response.body();
                     if (profile != null) {
-                        profiles.add(profile);
+                        profiles.add(profile.copy(profile.getEmail(), profile.get_id(), profile.getToken(), profile.getName(), profile.getPhone(), profile.getVerified(), profile.getBranch(), profile.getGender(), profile.getBio(), profile.getYear(), profile.getExpectations(), profile.getSlot(), profile.getUserImage(), getByteArray(profile.getUserImage().getUrl()), profile.getGenderPreference(), profile.getAccepted(), profile.getRejected(), profile.getBlocked()));
 
                         Api.INSTANCE.getRetrofitService().getAllMessages(user.getToken(), conversation.get_id()).enqueue(new Callback<>() {
                             @Override
@@ -228,5 +218,43 @@ public class MessagesFragment extends Fragment {
             return ItemType.Sent;
         else
             return ItemType.Received;
+    }
+
+    private byte[] getByteArray(String url) {
+        Bitmap bitmap = null;
+        if(url.isEmpty())
+            bitmap = BitmapFactory.decodeResource(Resources.getSystem(),R.drawable.profile_image);
+        else {
+            try {
+                bitmap = Glide.with(this).asBitmap().load(Uri.parse(url)).submit().get();
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+
+        return stream.toByteArray();
+    }
+
+    private void showHideViews() {
+        if (matches.isEmpty()) {
+            noMatches.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            matchAdapter.submitList(matches);
+            recyclerView.setVisibility(View.VISIBLE);
+            noMatches.setVisibility(View.GONE);
+        }
+
+        if (messages.isEmpty()) {
+            noMessages.setVisibility(View.VISIBLE);
+            recyclerView1.setVisibility(View.GONE);
+        } else {
+            messageAdapter.submitList(messages);
+            recyclerView1.setVisibility(View.VISIBLE);
+            noMessages.setVisibility(View.GONE);
+        }
     }
 }

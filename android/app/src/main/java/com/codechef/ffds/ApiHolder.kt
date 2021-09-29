@@ -4,25 +4,22 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 import java.util.concurrent.TimeUnit
 
-
-val retrofit: Retrofit = Retrofit.Builder()
-    .addConverterFactory(GsonConverterFactory.create())
-    .baseUrl("https://ffds-backend.herokuapp.com/").build()
-
-val loggingInterceptor: HttpLoggingInterceptor =
-    HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.HEADERS)
-
 val okHttpClient: OkHttpClient = OkHttpClient.Builder()
     .readTimeout(180, TimeUnit.SECONDS)
     .connectTimeout(180, TimeUnit.SECONDS)
-    .addInterceptor(loggingInterceptor)
+    .build()
+
+
+val retrofit: Retrofit = Retrofit.Builder()
+    .addConverterFactory(GsonConverterFactory.create())
+    .baseUrl("https://ffds-backend.herokuapp.com/")
+    .client(okHttpClient)
     .build()
 
 val retrofitForSlots: Retrofit =
@@ -97,7 +94,7 @@ interface ApiHolder {
     @Multipart
     fun uploadImage(
         @Header("Authorization") token: String?,
-        @Part file: MultipartBody.Part
+        @Part image: MultipartBody.Part
     ): Call<Image?>?
 
     @FormUrlEncoded

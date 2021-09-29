@@ -1,5 +1,6 @@
 package com.codechef.ffds
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
@@ -13,7 +14,6 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,11 +23,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.codechef.ffds.databinding.UpdateProfileActivityBinding
 import com.cunoraz.tagview.Tag
 import com.fasterxml.jackson.databind.ObjectMapper
-import okhttp3.MediaType
+import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
 import java.io.*
 import java.util.*
@@ -41,6 +44,7 @@ class UpdateProfileActivity : AppCompatActivity() {
     var user = Profile()
     private val tags = ArrayList<String>()
     private var imageArray = byteArrayOf()
+    private var filePart: MultipartBody.Part? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +76,19 @@ class UpdateProfileActivity : AppCompatActivity() {
                     val stream = ByteArrayOutputStream()
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                     imageArray = stream.toByteArray()
-                    //image = Base64.encodeToString(stream.toByteArray(), Base64.DEFAULT)
+
+                    val file =
+                        File(getExternalFilesDir(null)?.absolutePath + File.separator + "profile.png")
+                    file.createNewFile()
+
+                    val fos = FileOutputStream(file)
+                    fos.write(imageArray)
+                    fos.flush()
+                    fos.close()
+
+                    filePart = MultipartBody.Part.createFormData(
+                        "image", file.name, file.asRequestBody("image/png".toMediaTypeOrNull())
+                    )
                 }
 
             }
@@ -124,25 +140,25 @@ class UpdateProfileActivity : AppCompatActivity() {
                         name = yourName.text.toString().trim(),
                         phone = phoneNoEdit.text.toString(),
                         expectations = tags,
-                        userArray = imageArray,
                     )
                 )
             }
         }
     }
 
+    @SuppressLint("InflateParams")
     private fun updateUser(user: Profile) {
         val dialog = Dialog(this)
         val view = layoutInflater.inflate(R.layout.loading_dialog, null)
-        view.findViewById<TextView>(R.id.text).text = "Saving..."
+        view.findViewById<TextView>(R.id.text).text = getString(R.string.saving)
         dialog.setContentView(view)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.show()
         val om = ObjectMapper()
         val fields = om.writeValueAsString(user)
-        val body = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), fields)
+        val body = fields.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
         Api.retrofitService.update(user.token, body)
-            ?.enqueue(object : retrofit2.Callback<ResponseBody?> {
+            ?.enqueue(object : Callback<ResponseBody?> {
                 override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
                     dialog.dismiss()
                     Toast.makeText(applicationContext, t.message, Toast.LENGTH_SHORT).show()
@@ -152,41 +168,82 @@ class UpdateProfileActivity : AppCompatActivity() {
                     call: Call<ResponseBody?>,
                     response: Response<ResponseBody?>
                 ) {
-                    dialog.dismiss()
                     if (response.message() == "OK") {
-                        viewModel.updateUser(user)
-                        startActivity(Intent(baseContext, MainActivity::class.java))
-                    } else
-                        Toast.makeText(applicationContext, response.message(), Toast.LENGTH_SHORT)
-                            .show()
+                        if (filePart != null)
+                            uploadImage(user, dialog)
+                        else {
+                            dialog.dismiss()
+                            viewModel.updateUser(user)
+                            startActivity(Intent(baseContext, MainActivity::class.java))
+                        }
+                    } else {
+                        dialog.dismiss()
+                        val gson = Gson()
+                        val (_, message) = gson.fromJson(
+                            response.errorBody()!!.charStream(),
+                            Error::class.java
+                        )
+                        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                    }
                 }
             })
+    }
 
+    private fun uploadImage(user: Profile, dialog: Dialog) {
+        Api.retrofitService.uploadImage(user.token, filePart!!)?.enqueue(object : Callback<Image?> {
+            override fun onFailure(call: Call<Image?>, t: Throwable) {
+                Toast.makeText(applicationContext, "Failed: " + t.message, Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            override fun onResponse(call: Call<Image?>, response: Response<Image?>) {
+                if (response.message() == "OK") {
+                    dialog.dismiss()
+                    val image = response.body()
+                    if (image != null) {
+                        val profile = user.copy(userArray = imageArray, userImage = image)
+                        viewModel.updateUser(profile)
+                    }
+                    startActivity(Intent(baseContext, MainActivity::class.java))
+                } else {
+                    val gson = Gson()
+                    val error = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                    Toast.makeText(
+                        applicationContext,
+                        "Error ${response.code()}: ${error.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+
+
+        })
     }
 
     private fun setDefaultData() {
 
         binding.apply {
             val prefs = getSharedPreferences("MY PREFS", MODE_PRIVATE)
-            viewModel.getUserData(prefs.getString("id", "")!!).observe(this@UpdateProfileActivity) { user ->
-                this@UpdateProfileActivity.user = user
-                for (tag in user.expectations)
-                    tags.add(tag)
-                bio.setText(user.bio)
-                yourName.setText(user.name)
-                phoneNoEdit.text = user.phone
-                tagView2.setTagMargin(10f)
-                tagView2.setTextPaddingTop(2f)
-                tagView2.settextPaddingBottom(2f)
-                for (tag in tags) {
-                    tagView2.addTag(getNewTag(tag))
+            viewModel.getUserData(prefs.getString("id", "")!!)
+                .observe(this@UpdateProfileActivity) { user ->
+                    this@UpdateProfileActivity.user = user
+                    for (tag in user.expectations)
+                        tags.add(tag)
+                    bio.setText(user.bio)
+                    yourName.setText(user.name)
+                    phoneNoEdit.text = user.phone
+                    tagView2.setTagMargin(10f)
+                    tagView2.setTextPaddingTop(2f)
+                    tagView2.settextPaddingBottom(2f)
+                    for (tag in tags) {
+                        tagView2.addTag(getNewTag(tag))
+                    }
+                    val bitmap = if (user.userArray.isNotEmpty())
+                        BitmapFactory.decodeByteArray(user.userArray, 0, user.userArray.size)
+                    else
+                        BitmapFactory.decodeResource(resources, R.drawable.profile_image)
+                    dp.setImageBitmap(bitmap)
                 }
-                val bitmap = if(user.userArray.isNotEmpty())
-                    BitmapFactory.decodeByteArray(user.userArray, 0, user.userArray.size)
-                else
-                    BitmapFactory.decodeResource(resources, R.drawable.profile_image)
-                dp.setImageBitmap(bitmap)
-            }
         }
     }
 
@@ -211,7 +268,7 @@ class UpdateProfileActivity : AppCompatActivity() {
     private fun saveToInternalStorage(bitmapImage: Bitmap): String? {
         val cw = ContextWrapper(applicationContext)
         val directory: File = cw.getDir("FFDS", Context.MODE_PRIVATE)
-        val myPath = File(directory, "profileImage.jpg")
+        val myPath = File(directory, "profileImage.png")
         var fos: FileOutputStream? = null
         try {
             fos = FileOutputStream(myPath)
@@ -235,11 +292,5 @@ class UpdateProfileActivity : AppCompatActivity() {
             ContextCompat.getColor(this, R.color.colorPrimary)
 
         return tag
-    }
-
-    @Throws(FileNotFoundException::class)
-    private fun loadImageFromStorage(path: String): Bitmap? {
-        val f = File(path, "profileImage.jpg")
-        return BitmapFactory.decodeStream(FileInputStream(f))
     }
 }

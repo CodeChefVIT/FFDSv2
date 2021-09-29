@@ -122,7 +122,7 @@ public class MatchFragment extends Fragment {
 
             switch (direction) {
                 case ItemTouchHelper.RIGHT:
-                    Api.INSTANCE.getRetrofitService().createNewConversation(user.getToken(), user.get_id()).enqueue(new Callback<Conversation>() {
+                    Api.INSTANCE.getRetrofitService().createNewConversation(user.getToken(), user.get_id()).enqueue(new Callback<>() {
                         @Override
                         public void onFailure(@NonNull Call<Conversation> call, @NonNull Throwable t) {
                             Toast.makeText(getContext(), "Failed " + t.getMessage(), Toast.LENGTH_SHORT).show();

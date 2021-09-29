@@ -66,9 +66,7 @@ data class Feed(
 )
 
 data class Image(
-    val key: String = "",
     val url: String = "",
-    val message: String = ""
 )
 
 data class ConversationList(
@@ -78,7 +76,7 @@ data class ConversationList(
 
 data class Messages(
     val lastMessage: String = "",
-    val profileImage: Int = 0,
+    val profileImage: ByteArray,
     val name: String = "",
     val id: String = "",
     val conversationId: String = "",

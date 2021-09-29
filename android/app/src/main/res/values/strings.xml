@@ -17,4 +17,6 @@
     <string name="match_found">Match Found</string>
     <string name="send_message">Send Message</string>
     <string name="submit">SUBMIT</string>
+    <string name="saving">Saving…</string>
+    <string name="uploading">Uploading…</string>
 </resources>

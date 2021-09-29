@@ -46,7 +46,7 @@ class TimeTable : AppCompatActivity() {
 
                     val dialog = Dialog(this)
                     val view = layoutInflater.inflate(R.layout.loading_dialog, null)
-                    view.findViewById<TextView>(R.id.text).text = "Uploading..."
+                    view.findViewById<TextView>(R.id.text).text = getString(R.string.uploading)
                     dialog.setContentView(view)
                     dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     dialog.show()
@@ -79,7 +79,7 @@ class TimeTable : AppCompatActivity() {
 
                     val filePart = MultipartBody.Part.createFormData(
                         "file", file.absolutePath, file
-                            .asRequestBody("multipart/form-data".toMediaTypeOrNull())
+                            .asRequestBody("image/png".toMediaTypeOrNull())
                     )
 
                     Api.retrofitServiceForSlots.getFreeSlots(filePart)
