@@ -24,8 +24,7 @@ import retrofit2.Response
 import java.net.URISyntaxException
 import java.util.*
 import android.content.SharedPreferences
-
-
+import com.google.gson.Gson
 
 
 class RegisterActivity1 : AppCompatActivity() {
@@ -154,9 +153,15 @@ class RegisterActivity1 : AppCompatActivity() {
                     mSocket.emit(looking, email)
                     saveUser(email)
                     binding.registerBtn.text = "CONTINUE"
-                } else
-                    Toast.makeText(applicationContext, response.message(), Toast.LENGTH_SHORT)
-                        .show()
+                } else {
+                    val gson = Gson()
+                    val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                    Toast.makeText(
+                        applicationContext,
+                        "Error ${response.code()}: $message",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         })
     }
@@ -179,9 +184,15 @@ class RegisterActivity1 : AppCompatActivity() {
                         startActivity(Intent(this@RegisterActivity1, RegisterActivity2::class.java))
                         finish()
                     }
-                } else
-                    Toast.makeText(applicationContext, response.message(), Toast.LENGTH_SHORT)
-                        .show()
+                } else {
+                    val gson = Gson()
+                    val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                    Toast.makeText(
+                        applicationContext,
+                        "Error ${response.code()}: $message",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
 
         })

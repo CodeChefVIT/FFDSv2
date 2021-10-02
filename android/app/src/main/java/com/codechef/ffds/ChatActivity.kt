@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.codechef.ffds.databinding.ActivityChatBinding
+import com.google.gson.Gson
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -183,12 +184,15 @@ class ChatActivity : AppCompatActivity() {
 
                             viewModel.insertAllMessages(*chats.toTypedArray())
                         }
-                    } else
+                    } else {
+                        val gson = Gson()
+                        val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
                         Toast.makeText(
-                            baseContext,
-                            "MESSAGES: ${response.message()}",
+                            applicationContext,
+                            "Error ${response.code()}: MESSAGES: $message",
                             Toast.LENGTH_SHORT
                         ).show()
+                    }
                 }
             })
 
@@ -256,12 +260,15 @@ class ChatActivity : AppCompatActivity() {
                             chat.text,
                             chat.createdAt
                         )
-                    } else
+                    } else {
+                        val gson = Gson()
+                        val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
                         Toast.makeText(
-                            baseContext,
-                            "send: ${response.message()}",
+                            applicationContext,
+                            "Error ${response.code()}: send: $message",
                             Toast.LENGTH_SHORT
                         ).show()
+                    }
                 }
             })
     }

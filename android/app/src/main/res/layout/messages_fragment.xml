@@ -41,7 +41,7 @@
             android:visibility="invisible" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/matches_view"
+            android:id="@+id/matches_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:layout_marginTop="10dp"
@@ -71,7 +71,7 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/messages_view"
+        android:id="@+id/messages_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp"

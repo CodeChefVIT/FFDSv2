@@ -3,9 +3,34 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/drawable/button_back.xml" value="0.19583333333333333" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/drawable/button_back2.xml" value="0.19583333333333333" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/drawable/button_back3.xml" value="0.19583333333333333" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/drawable/free_slot_background.xml" value="0.19583333333333333" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/drawable/ic_book.xml" value="0.1671875" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/drawable/ic_cheers.xml" value="0.1671875" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/drawable/ic_previous.xml" value="0.12864583333333332" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/drawable/ic_send.xml" value="0.10520833333333333" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/drawable/ic_send_chat.xml" value="0.10520833333333333" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/drawable/ic_user.xml" value="0.10520833333333333" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/drawable/icon_back.xml" value="0.10520833333333333" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/drawable/item_back.xml" value="0.10520833333333333" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/drawable/reject_icon.xml" value="0.17314814814814813" />
         <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/activity_chat.xml" value="0.12952898550724637" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/activity_main.xml" value="0.1105072463768116" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/activity_time_table.xml" value="0.1796875" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/fragment_matched.xml" value="0.14666666666666667" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/item_msg_received.xml" value="0.1796875" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/item_msg_sent.xml" value="0.1796875" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/item_time_table.xml" value="0.1796875" />
         <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/matches_fragment.xml" value="0.1796875" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/matches_item_layout.xml" value="0.11764705882352941" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/matches_item_layout2.xml" value="0.1796875" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/messages_adapter_item.xml" value="0.16666666666666666" />
         <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/messages_fragment.xml" value="0.12817028985507245" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/profile_fragment.xml" value="0.1" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/register1_activity.xml" value="0.11655405405405406" />
+        <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/register2_activity.xml" value="0.11655405405405406" />
         <entry key="..\:/AndroidStudio/FFDSv2/android/app/src/main/res/layout/update_profile_activity.xml" value="0.12635869565217392" />
       </map>
     </option>
