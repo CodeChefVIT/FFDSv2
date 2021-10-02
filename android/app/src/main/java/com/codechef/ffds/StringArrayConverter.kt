@@ -5,7 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
-class DataConverter {
+class StringArrayConverter {
     @TypeConverter
     fun fromStringList(list: ArrayList<String>): String {
         val gson = Gson()

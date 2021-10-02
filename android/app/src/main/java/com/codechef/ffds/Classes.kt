@@ -8,26 +8,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-data class User(
-    val name: String,
-    val email: String,
-    val bio: String
-)
-
 enum class ItemType {
     Sent, Received, Date
 }
-
-@Entity
-data class Chat(
-    @PrimaryKey(autoGenerate = false) val _id: String = "",
-    val conversationId: String,
-    val senderId: String,
-    val text: String,
-    @TypeConverters(DateConverter::class) val createdAt: Date,
-    @TypeConverters(DateConverter::class) val updatedAt: Date,
-    val type: ItemType
-)
 
 @Entity
 data class Profile(
@@ -41,15 +24,37 @@ data class Profile(
     val gender: String = "",
     val bio: String = "",
     val year: String = "",
-    @TypeConverters(DataConverter::class) val expectations: ArrayList<String> = ArrayList(),
+    @TypeConverters(StringArrayConverter::class) val expectations: ArrayList<String> = ArrayList(),
     @TypeConverters(MapConverter::class) val slot: ArrayList<ArrayList<HashMap<String, Any>>> = ArrayList(),
     @TypeConverters(ImageTypeConverter::class) val userImage: Image = Image(),
-    val userArray: List<Byte> = emptyList(),
+    @TypeConverters(ByteArrayConverter::class) val userArray: List<Byte> = emptyList(),
     val genderPreference: String = "none",
-    @TypeConverters(DataConverter::class) val accepted: ArrayList<String> = ArrayList(),
-    @TypeConverters(DataConverter::class) val rejected: ArrayList<String> = ArrayList(),
-    @TypeConverters(DataConverter::class) val blocked: ArrayList<String> = ArrayList(),
+    @TypeConverters(StringArrayConverter::class) val accepted: ArrayList<String> = ArrayList(),
+    @TypeConverters(StringArrayConverter::class) val rejected: ArrayList<String> = ArrayList(),
+    @TypeConverters(StringArrayConverter::class) val blocked: ArrayList<String> = ArrayList(),
 ) : Serializable
+
+@Entity
+data class Conversation(
+    @TypeConverters(StringArrayConverter::class) val members: ArrayList<String>,
+    @PrimaryKey(autoGenerate = false) val _id: String,
+    val matched: Boolean,
+    val blocked: Boolean,
+    val hasMessages: Boolean,
+    @TypeConverters(DateTypeConverter::class) val createdAt: Date,
+    @TypeConverters(DateTypeConverter::class) val updatedAt: Date
+)
+
+@Entity
+data class Chat(
+    @PrimaryKey(autoGenerate = false) val _id: String = "",
+    val conversationId: String,
+    val senderId: String,
+    val text: String,
+    @TypeConverters(DateTypeConverter::class) val createdAt: Date,
+    @TypeConverters(DateTypeConverter::class) val updatedAt: Date,
+    val type: ItemType
+)
 
 data class Error(
     val err: Boolean,
@@ -82,22 +87,16 @@ data class Messages(
     val conversationId: String = "",
 )
 
-@Entity
-data class Conversation(
-    @TypeConverters(DataConverter::class) val members: ArrayList<String>,
-    @PrimaryKey(autoGenerate = false) val _id: String,
-    val matched: Boolean,
-    val blocked: Boolean,
-    val hasMessages: Boolean,
-    @TypeConverters(DateConverter::class) val createdAt: Date,
-    @TypeConverters(DateConverter::class) val updatedAt: Date
+data class SlotMapper(
+    val slots: ArrayList<String>
 )
 
-class Slots {
+data class Slots(
+    val slot: ArrayList<ArrayList<HashMap<String, Any>>> = ArrayList()
+) {
 
-    fun getSlots(): ArrayList<ArrayList<HashMap<String, Any>>> {
+    fun createSlots() {
 
-        val tableMap = ArrayList<ArrayList<HashMap<String, Any>>>()
         var itemArray = ArrayList<HashMap<String, Any>>()
 
         itemArray.add(map("A1/L1", false))
@@ -114,7 +113,7 @@ class Slots {
         itemArray.add(map("TG2/L35", false))
         itemArray.add(map("L36", false))
         itemArray.add(map("V3", false))
-        tableMap.add(ArrayList(itemArray))
+        slot.add(ArrayList(itemArray))
         itemArray = ArrayList()
 
         itemArray.add(map("B1/L7", false))
@@ -131,7 +130,7 @@ class Slots {
         itemArray.add(map("TAA2/L41", false))
         itemArray.add(map("L42", false))
         itemArray.add(map("V4", false))
-        tableMap.add(ArrayList(itemArray))
+        slot.add(ArrayList(itemArray))
         itemArray = ArrayList()
 
         itemArray.add(map("C1/L13", false))
@@ -148,7 +147,7 @@ class Slots {
         itemArray.add(map("TBB2/L47", false))
         itemArray.add(map("L48", false))
         itemArray.add(map("V5", false))
-        tableMap.add(ArrayList(itemArray))
+        slot.add(ArrayList(itemArray))
         itemArray = ArrayList()
 
         itemArray.add(map("D1/L19", false))
@@ -165,7 +164,7 @@ class Slots {
         itemArray.add(map("TCC2/L53", false))
         itemArray.add(map("L54", false))
         itemArray.add(map("V6", false))
-        tableMap.add(ArrayList(itemArray))
+        slot.add(ArrayList(itemArray))
         itemArray = ArrayList()
 
         itemArray.add(map("E1/L25", false))
@@ -182,7 +181,7 @@ class Slots {
         itemArray.add(map("TDD2/L59", false))
         itemArray.add(map("L60", false))
         itemArray.add(map("V7", false))
-        tableMap.add(ArrayList(itemArray))
+        slot.add(ArrayList(itemArray))
         itemArray = ArrayList()
 
         itemArray.add(map("V8/L71", false))
@@ -199,7 +198,7 @@ class Slots {
         itemArray.add(map("W22/L81", false))
         itemArray.add(map("L82", false))
         itemArray.add(map("V9", false))
-        tableMap.add(ArrayList(itemArray))
+        slot.add(ArrayList(itemArray))
 
         itemArray.add(map("V10/L83", false))
         itemArray.add(map("Y11/L84", false))
@@ -215,9 +214,7 @@ class Slots {
         itemArray.add(map("W22/L93", false))
         itemArray.add(map("L94", false))
         itemArray.add(map("V11", false))
-        tableMap.add(ArrayList(itemArray))
-
-        return tableMap
+        slot.add(ArrayList(itemArray))
     }
 
     private fun map(key: String, value: Boolean): HashMap<String, Any> {

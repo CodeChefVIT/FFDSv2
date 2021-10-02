@@ -77,7 +77,7 @@ interface ApiHolder {
     @FormUrlEncoded
     fun slotMapper(
         @Field("Slots") slot: ArrayList<String>
-    ): ArrayList<ArrayList<HashMap<String, Any>>>?
+    ): Call<Slots>?
 
     @GET("user/feed")
     fun getFeed(
@@ -153,7 +153,7 @@ interface SlotsApiHolder {
     @Multipart
     fun getFreeSlots(
         @Part file: MultipartBody.Part
-    ): Call<ResponseBody?>?
+    ): Call<SlotMapper?>?
 }
 
 object Api {

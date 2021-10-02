@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.codechef.ffds.databinding.LoginActivityBinding
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -80,9 +81,15 @@ class LoginActivity : AppCompatActivity() {
                         updateProfile(token)
                     }
                 }
-                else
-                    Toast.makeText(applicationContext, response.message(), Toast.LENGTH_SHORT)
-                        .show()
+                else {
+                    val gson = Gson()
+                    val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                    Toast.makeText(
+                        applicationContext,
+                        "Error ${response.code()}: $message",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
                 dialog.dismiss()
             }
         })
@@ -112,9 +119,15 @@ class LoginActivity : AppCompatActivity() {
                         editor.putString("id", user._id).apply()
                         startActivity(Intent(baseContext, MainActivity::class.java))
                         finish()
-                    } else
-                        Toast.makeText(applicationContext, response.message(), Toast.LENGTH_LONG)
-                            .show()
+                    } else {
+                        val gson = Gson()
+                        val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                        Toast.makeText(
+                            applicationContext,
+                            "Error ${response.code()}: $message",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             })
     }

@@ -29,9 +29,9 @@ class MatchFragment : Fragment() {
     private lateinit var binding: MatchesFragmentBinding
 
     private var matches: ArrayList<Profile> = ArrayList()
-    private var adapter: Adapter? = null
     private var user = Profile()
     private lateinit var viewModel: UserViewModel
+    private lateinit var adapter: Adapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,7 +69,7 @@ class MatchFragment : Fragment() {
             matchesRecyclerView.layoutManager = LinearLayoutManager(context)
             val itemTouchHelper = ItemTouchHelper(simpleCallback)
             itemTouchHelper.attachToRecyclerView(matchesRecyclerView)
-            adapter!!.setOnItemClickListener(object : Adapter.OnItemClickListener {
+            adapter.setOnItemClickListener(object : Adapter.OnItemClickListener {
                 override fun onShowProfileClicked(position: Int) {
 
                 }
@@ -88,14 +88,16 @@ class MatchFragment : Fragment() {
                     val feed = response.body()
                     if (feed != null) {
                         matches = feed.feed
-                        adapter!!.notifyDataSetChanged()
+                        adapter.notifyDataSetChanged()
                     }
                 } else {
                     val gson = Gson()
-                    val (_, message) = gson.fromJson(
-                        response.errorBody()!!.charStream(), Error::class.java
-                    )
-                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                    val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                    Toast.makeText(
+                        requireContext(),
+                        "Error ${response.code()}: $message",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         })
@@ -130,17 +132,18 @@ class MatchFragment : Fragment() {
                             ) {
                                 if (response.message() == "OK") {
                                     matches.removeAt(position)
-                                    adapter!!.notifyItemRemoved(position)
+                                    adapter.notifyItemRemoved(position)
                                     val manager = parentFragmentManager
                                     manager.beginTransaction()
                                         .replace(R.id.container, MatchedFragment()).commit()
                                 } else {
                                     val gson = Gson()
-                                    val (_, message) = gson.fromJson(
-                                        response.errorBody()!!.charStream(), Error::class.java
-                                    )
-                                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT)
-                                        .show()
+                                    val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Error ${response.code()}: $message",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         })
@@ -157,7 +160,7 @@ class MatchFragment : Fragment() {
                             ) {
                                 if (response.message() == "OK") {
                                     matches.removeAt(position)
-                                    adapter!!.notifyItemRemoved(position)
+                                    adapter.notifyItemRemoved(position)
                                     Toast.makeText(
                                         requireContext(),
                                         "User successfully rejected",
@@ -165,11 +168,12 @@ class MatchFragment : Fragment() {
                                     ).show()
                                 } else {
                                     val gson = Gson()
-                                    val (_, message) = gson.fromJson(
-                                        response.errorBody()!!.charStream(), Error::class.java
-                                    )
-                                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT)
-                                        .show()
+                                    val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Error ${response.code()}: $message",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         })

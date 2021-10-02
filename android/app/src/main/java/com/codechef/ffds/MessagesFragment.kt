@@ -163,10 +163,12 @@ class MessagesFragment : Fragment() {
                         }
                     } else {
                         val gson = Gson()
-                        val (_, message) = gson.fromJson(
-                            response.errorBody()!!.charStream(), Error::class.java
-                        )
-                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                        val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                        Toast.makeText(
+                            requireContext(),
+                            "Error ${response.code()}: $message",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             })
@@ -210,11 +212,15 @@ class MessagesFragment : Fragment() {
                                             viewModel.insertUser(*profiles.toTypedArray())
                                             viewModel.insertAllConversations(*conversations.toTypedArray())
                                         } else getData(user, count + 1)
-                                    } else Toast.makeText(
-                                        requireContext(),
-                                        "all msgs: " + response.message(),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    } else {
+                                        val gson = Gson()
+                                        val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "Error ${response.code()}: all msgs: $message",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
                                 }
                             })
                     }

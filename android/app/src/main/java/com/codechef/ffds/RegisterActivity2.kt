@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.codechef.ffds.databinding.Register2ActivityBinding
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.gson.Gson
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
@@ -100,9 +101,15 @@ class RegisterActivity2 : AppCompatActivity() {
                         updateProfile(user.token)
                         startActivity(Intent(baseContext, MainActivity::class.java))
                         finish()
-                    } else
-                        Toast.makeText(applicationContext, response.message(), Toast.LENGTH_SHORT)
-                            .show()
+                    } else {
+                        val gson = Gson()
+                        val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                        Toast.makeText(
+                            applicationContext,
+                            "Error ${response.code()}: $message",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             })
 
@@ -125,9 +132,15 @@ class RegisterActivity2 : AppCompatActivity() {
                         editor.putString("id", user._id).apply()
                         startActivity(Intent(baseContext, MainActivity::class.java))
                         finish()
-                    } else
-                        Toast.makeText(applicationContext, response.message(), Toast.LENGTH_LONG)
-                            .show()
+                    } else {
+                        val gson = Gson()
+                        val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                        Toast.makeText(
+                            applicationContext,
+                            "Error ${response.code()}: $message",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             })
     }

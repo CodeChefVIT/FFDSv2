@@ -3,8 +3,6 @@ package com.codechef.ffds
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -123,7 +121,7 @@ class UpdateProfileActivity : AppCompatActivity() {
             }
 
             uploadTimeTable.setOnClickListener {
-                val intent = Intent(this@UpdateProfileActivity, TimeTable::class.java)
+                val intent = Intent(this@UpdateProfileActivity, TimeTableActivity::class.java)
                 resultLauncher2.launch(intent)
             }
 
@@ -179,11 +177,12 @@ class UpdateProfileActivity : AppCompatActivity() {
                     } else {
                         dialog.dismiss()
                         val gson = Gson()
-                        val (_, message) = gson.fromJson(
-                            response.errorBody()!!.charStream(),
-                            Error::class.java
-                        )
-                        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+                        val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                        Toast.makeText(
+                            applicationContext,
+                            "Error ${response.code()}: $message",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             })
@@ -197,8 +196,8 @@ class UpdateProfileActivity : AppCompatActivity() {
             }
 
             override fun onResponse(call: Call<Image?>, response: Response<Image?>) {
+                dialog.dismiss()
                 if (response.message() == "OK") {
-                    dialog.dismiss()
                     val image = response.body()
                     if (image != null) {
                         val profile = user.copy(userArray = imageArray.toList(), userImage = image)
@@ -207,10 +206,10 @@ class UpdateProfileActivity : AppCompatActivity() {
                     startActivity(Intent(baseContext, MainActivity::class.java))
                 } else {
                     val gson = Gson()
-                    val error = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
+                    val (_,message) = gson.fromJson(response.errorBody()?.charStream(), Error::class.java)
                     Toast.makeText(
                         applicationContext,
-                        "Error ${response.code()}: ${error.message}",
+                        "Error ${response.code()}: $message",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -263,26 +262,6 @@ class UpdateProfileActivity : AppCompatActivity() {
             }
             addTags.text = null
         }
-    }
-
-    private fun saveToInternalStorage(bitmapImage: Bitmap): String? {
-        val cw = ContextWrapper(applicationContext)
-        val directory: File = cw.getDir("FFDS", Context.MODE_PRIVATE)
-        val myPath = File(directory, "profileImage.png")
-        var fos: FileOutputStream? = null
-        try {
-            fos = FileOutputStream(myPath)
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            try {
-                fos?.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-        return directory.absolutePath
     }
 
     private fun getNewTag(text: String): Tag {
