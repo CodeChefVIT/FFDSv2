@@ -201,7 +201,7 @@ class UpdateProfileActivity : AppCompatActivity() {
                     dialog.dismiss()
                     val image = response.body()
                     if (image != null) {
-                        val profile = user.copy(userArray = imageArray, userImage = image)
+                        val profile = user.copy(userArray = imageArray.toList(), userImage = image)
                         viewModel.updateUser(profile)
                     }
                     startActivity(Intent(baseContext, MainActivity::class.java))
@@ -239,7 +239,7 @@ class UpdateProfileActivity : AppCompatActivity() {
                         tagView2.addTag(getNewTag(tag))
                     }
                     val bitmap = if (user.userArray.isNotEmpty())
-                        BitmapFactory.decodeByteArray(user.userArray, 0, user.userArray.size)
+                        BitmapFactory.decodeByteArray(user.userArray.toByteArray(), 0, user.userArray.size)
                     else
                         BitmapFactory.decodeResource(resources, R.drawable.profile_image)
                     dp.setImageBitmap(bitmap)

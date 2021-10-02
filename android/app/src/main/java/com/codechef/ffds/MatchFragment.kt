@@ -1,181 +1,218 @@
-package com.codechef.ffds;
+package com.codechef.ffds
 
-import static android.content.Context.MODE_PRIVATE;
+import android.content.Context
+import android.graphics.Canvas
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.codechef.ffds.Api.retrofitService
+import com.codechef.ffds.databinding.MatchesFragmentBinding
+import com.google.gson.Gson
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.*
+import kotlin.collections.ArrayList
 
-import android.content.SharedPreferences;
-import android.graphics.Canvas;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
+class MatchFragment : Fragment() {
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+    private lateinit var binding: MatchesFragmentBinding
 
-import com.google.gson.Gson;
+    private var matches: ArrayList<Profile> = ArrayList()
+    private var adapter: Adapter? = null
+    private var user = Profile()
+    private lateinit var viewModel: UserViewModel
 
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-
-import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class MatchFragment extends Fragment {
-
-    private ArrayList<Profile> matches;
-    private Adapter adapter;
-
-    private Profile user;
-    private UserViewModel viewModel;
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.matches_fragment, container, false);
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = MatchesFragmentBinding.inflate(layoutInflater)
+        return binding.root
     }
 
-    @Override
-    public void onViewCreated(@NonNull @NotNull View root, @Nullable @org.jetbrains.annotations.Nullable Bundle savedInstanceState) {
-        super.onViewCreated(root, savedInstanceState);
+    override fun onViewCreated(root: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(root, savedInstanceState)
 
-        matches = new ArrayList<>();
+        binding.apply {
 
-        viewModel = new ViewModelProvider(this, new UserViewModelFactory(getActivity().getApplication())).get(UserViewModel.class);
+            matches = ArrayList()
+            viewModel =
+                ViewModelProvider(
+                    this@MatchFragment,
+                    UserViewModelFactory(requireActivity().application)
+                ).get(
+                    UserViewModel::class.java
+                )
+            val prefs = requireContext().getSharedPreferences("MY PREFS", Context.MODE_PRIVATE)
+            viewModel.getUserData(prefs.getString("id", "")!!)
+                .observe(viewLifecycleOwner, { currentUser: Profile ->
+                    user = currentUser
+                    getData(user)
 
-        SharedPreferences prefs = getContext().getSharedPreferences("MY PREFS", MODE_PRIVATE);
-        viewModel.getUserData(prefs.getString("id", "")).observe(getViewLifecycleOwner(), currentUser -> {
-            if (user == null) {
-                user = currentUser;
-                getData(user);
-            }
-        });
+                })
+            if (matches.isEmpty()) noMatches.visibility = View.VISIBLE else noMatches.visibility =
+                View.INVISIBLE
+            adapter = Adapter(requireContext(), matches)
+            matchesRecyclerView.adapter = adapter
+            matchesRecyclerView.layoutManager = LinearLayoutManager(context)
+            val itemTouchHelper = ItemTouchHelper(simpleCallback)
+            itemTouchHelper.attachToRecyclerView(matchesRecyclerView)
+            adapter!!.setOnItemClickListener(object : Adapter.OnItemClickListener {
+                override fun onShowProfileClicked(position: Int) {
 
-
-        TextView noMatches = root.findViewById(R.id.no_matches);
-        if (matches.isEmpty())
-            noMatches.setVisibility(View.VISIBLE);
-        else
-            noMatches.setVisibility(View.INVISIBLE);
-
-        RecyclerView recyclerView = root.findViewById(R.id.matches_list);
-        adapter = new Adapter(getContext(), matches);
-        recyclerView.setAdapter(adapter);
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
-
-        adapter.setOnItemClickListener(position -> {
-
-        });
+                }
+            })
+        }
     }
 
-    private void getData(Profile user) {
-        Api.INSTANCE.getRetrofitService().getFeed(user.getToken()).enqueue(new Callback<>() {
-
-            @Override
-            public void onFailure(@NonNull Call<Feed> call, @NonNull Throwable t) {
-                Toast.makeText(getContext(), "Failed " + t.getMessage(), Toast.LENGTH_SHORT).show();
+    private fun getData(user: Profile?) {
+        retrofitService.getFeed(user!!.token)!!.enqueue(object : Callback<Feed?> {
+            override fun onFailure(call: Call<Feed?>, t: Throwable) {
+                Toast.makeText(context, "Failed " + t.message, Toast.LENGTH_SHORT).show()
             }
 
-            @Override
-            public void onResponse(@NonNull Call<Feed> call, @NonNull Response<Feed> response) {
-                if (response.message().equals("OK")) {
-                    Feed feed = response.body();
+            override fun onResponse(call: Call<Feed?>, response: Response<Feed?>) {
+                if (response.message() == "OK") {
+                    val feed = response.body()
                     if (feed != null) {
-                        matches = feed.getFeed();
-                        adapter.notifyDataSetChanged();
+                        matches = feed.feed
+                        adapter!!.notifyDataSetChanged()
                     }
                 } else {
-                    Gson gson = new Gson();
-                    Error error = gson.fromJson(response.errorBody().charStream(), Error.class);
-                    Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    val gson = Gson()
+                    val (_, message) = gson.fromJson(
+                        response.errorBody()!!.charStream(), Error::class.java
+                    )
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+    }
+
+    private var simpleCallback: ItemTouchHelper.SimpleCallback =
+        object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.absoluteAdapterPosition
+                when (direction) {
+                    ItemTouchHelper.RIGHT -> retrofitService.createNewConversation(
+                        user.token,
+                        user._id
+                    )!!
+                        .enqueue(object : Callback<Conversation?> {
+                            override fun onFailure(call: Call<Conversation?>, t: Throwable) {
+                                Toast.makeText(context, "Failed " + t.message, Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+
+                            override fun onResponse(
+                                call: Call<Conversation?>,
+                                response: Response<Conversation?>
+                            ) {
+                                if (response.message() == "OK") {
+                                    matches.removeAt(position)
+                                    adapter!!.notifyItemRemoved(position)
+                                    val manager = parentFragmentManager
+                                    manager.beginTransaction()
+                                        .replace(R.id.container, MatchedFragment()).commit()
+                                } else {
+                                    val gson = Gson()
+                                    val (_, message) = gson.fromJson(
+                                        response.errorBody()!!.charStream(), Error::class.java
+                                    )
+                                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            }
+                        })
+                    ItemTouchHelper.LEFT -> retrofitService.rejectMatch(user.token, user._id)!!
+                        .enqueue(object : Callback<ResponseBody?> {
+                            override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                                Toast.makeText(context, "Failed " + t.message, Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+
+                            override fun onResponse(
+                                call: Call<ResponseBody?>,
+                                response: Response<ResponseBody?>
+                            ) {
+                                if (response.message() == "OK") {
+                                    matches.removeAt(position)
+                                    adapter!!.notifyItemRemoved(position)
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "User successfully rejected",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    val gson = Gson()
+                                    val (_, message) = gson.fromJson(
+                                        response.errorBody()!!.charStream(), Error::class.java
+                                    )
+                                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            }
+                        })
                 }
             }
 
-        });
-    }
-
-    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
-        @Override
-        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-            return false;
-        }
-
-        @Override
-        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-            final int position = viewHolder.getAbsoluteAdapterPosition();
-
-            switch (direction) {
-                case ItemTouchHelper.RIGHT:
-                    Api.INSTANCE.getRetrofitService().createNewConversation(user.getToken(), user.get_id()).enqueue(new Callback<>() {
-                        @Override
-                        public void onFailure(@NonNull Call<Conversation> call, @NonNull Throwable t) {
-                            Toast.makeText(getContext(), "Failed " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onResponse(@NonNull Call<Conversation> call, @NonNull Response<Conversation> response) {
-                            if (response.message().equals("OK")) {
-                                matches.remove(position);
-                                adapter.notifyItemRemoved(position);
-                                FragmentManager manager = getParentFragmentManager();
-                                manager.beginTransaction().replace(R.id.container, new MatchedFragment()).commit();
-                            } else {
-                                Gson gson = new Gson();
-                                Error error = gson.fromJson(response.errorBody().charStream(), Error.class);
-                                Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                    break;
-                case ItemTouchHelper.LEFT:
-                    Api.INSTANCE.getRetrofitService().rejectMatch(user.getToken(), user.get_id()).enqueue(new Callback<ResponseBody>() {
-                        @Override
-                        public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
-                            Toast.makeText(getContext(), "Failed " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
-                            if (response.message().equals("OK")) {
-                                matches.remove(position);
-                                adapter.notifyItemRemoved(position);
-                                Toast.makeText(requireContext(), "User successfully rejected", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Gson gson = new Gson();
-                                Error error = gson.fromJson(response.errorBody().charStream(), Error.class);
-                                Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                    break;
-            }
-        }
-
-        @Override
-        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-            new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-                    .addBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                RecyclerViewSwipeDecorator.Builder(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+                    .addBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.colorPrimary
+                        )
+                    )
                     .addSwipeRightActionIcon(R.drawable.cupid_icon)
                     .addSwipeLeftActionIcon(R.drawable.reject_icon)
                     .create()
-                    .decorate();
-            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                    .decorate()
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
         }
-    };
 }

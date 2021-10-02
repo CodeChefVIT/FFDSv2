@@ -52,12 +52,12 @@ class MessageAdapter internal constructor(
             MatchViewHolder::class.java -> {
                 val viewHolder = holder as MatchViewHolder
                 val imageArray = arrayList[position].profileImage
-                viewHolder.dp.setImageBitmap(BitmapFactory.decodeByteArray(imageArray, 0, imageArray.size))
+                viewHolder.dp.setImageBitmap(BitmapFactory.decodeByteArray(imageArray.toByteArray(), 0, imageArray.size))
             }
             MessageViewHolder::class.java -> {
                 val viewHolder = holder as MessageViewHolder
                 val imageArray = arrayList[position].profileImage
-                viewHolder.dp.setImageBitmap(BitmapFactory.decodeByteArray(imageArray, 0, imageArray.size))
+                viewHolder.dp.setImageBitmap(BitmapFactory.decodeByteArray(imageArray.toByteArray(), 0, imageArray.size))
                 viewHolder.last.text = arrayList[position].lastMessage
                 viewHolder.name.text = arrayList[position].name
             }

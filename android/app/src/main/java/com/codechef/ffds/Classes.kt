@@ -44,7 +44,7 @@ data class Profile(
     @TypeConverters(DataConverter::class) val expectations: ArrayList<String> = ArrayList(),
     @TypeConverters(MapConverter::class) val slot: ArrayList<ArrayList<HashMap<String, Any>>> = ArrayList(),
     @TypeConverters(ImageTypeConverter::class) val userImage: Image = Image(),
-    val userArray: ByteArray = byteArrayOf(),
+    val userArray: List<Byte> = emptyList(),
     val genderPreference: String = "none",
     @TypeConverters(DataConverter::class) val accepted: ArrayList<String> = ArrayList(),
     @TypeConverters(DataConverter::class) val rejected: ArrayList<String> = ArrayList(),
@@ -76,7 +76,7 @@ data class ConversationList(
 
 data class Messages(
     val lastMessage: String = "",
-    val profileImage: ByteArray,
+    val profileImage: List<Byte> = emptyList(),
     val name: String = "",
     val id: String = "",
     val conversationId: String = "",

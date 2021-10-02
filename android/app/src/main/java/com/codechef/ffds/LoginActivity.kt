@@ -105,7 +105,7 @@ class LoginActivity : AppCompatActivity() {
                             val bitmap = Glide.with(this@LoginActivity).asBitmap().load(Uri.parse(image.url)).submit().get()
                             val stream = ByteArrayOutputStream()
                             bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                            user.copy(userArray = stream.toByteArray())
+                            user.copy(userArray = stream.toByteArray().toList())
                         }
                         viewModel.updateUser(user.copy(token = token))
                         val editor = getSharedPreferences("MY PREFS", MODE_PRIVATE).edit()

@@ -1,77 +1,71 @@
-package com.codechef.ffds;
+package com.codechef.ffds
 
-import android.animation.Animator;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.animation.Animator
+import android.content.Intent
+import android.os.Bundle
+import android.os.Handler
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import com.codechef.ffds.databinding.ActivitySplashScreenBinding
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
+class SplashScreen : AppCompatActivity() {
 
-import com.airbnb.lottie.LottieAnimationView;
+    private lateinit var binding: ActivitySplashScreenBinding
+    private var tokenPresent = false
+    private var namePresent = false
 
-public class SplashScreen extends AppCompatActivity {
-
-    boolean tokenPresent = false;
-    boolean namePresent = false;
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        UserViewModel viewModel = new ViewModelProvider(this, new UserViewModelFactory(getApplication())).get(UserViewModel.class);
-        SharedPreferences prefs = getSharedPreferences("MY PREFS", MODE_PRIVATE);
-        viewModel.getUserData(prefs.getString("id", "")).observe(this, user -> {
-            if (user!= null) {
-                if (!user.getToken().isEmpty())
-                    tokenPresent = true;
-                if(!user.getName().isEmpty())
-                    namePresent = true;
+    override fun onStart() {
+        super.onStart()
+        val viewModel = ViewModelProvider(this, UserViewModelFactory(application)).get(
+            UserViewModel::class.java
+        )
+        val prefs = getSharedPreferences("MY PREFS", MODE_PRIVATE)
+        viewModel.getUserData(prefs.getString("id", "")!!).observe(this, { user: Profile? ->
+            if (user != null) {
+                if (user.token.isNotEmpty()) tokenPresent = true
+                if (user.name.isNotEmpty()) namePresent = true
             }
-        });
+        })
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash_screen);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivitySplashScreenBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        LottieAnimationView animation = findViewById(R.id.lottie_animation);
-        ImageView icon = findViewById(R.id.icon);
-        TextView text = findViewById(R.id.app_name);
-        animation.setMaxFrame(170);
-        animation.addAnimatorListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
-            }
+        binding.apply {
+            lottieAnimation.setMaxFrame(170)
+            lottieAnimation.addAnimatorListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animator: Animator) {}
+                override fun onAnimationEnd(animator: Animator) {
+                    lottieAnimation.visibility = View.GONE
+                    icon.visibility = View.VISIBLE
+                    appName.visibility = View.VISIBLE
+                    Handler(mainLooper).postDelayed({
+                        if (tokenPresent && namePresent) startActivity(
+                            Intent(
+                                this@SplashScreen,
+                                MainActivity::class.java
+                            )
+                        ) else if (tokenPresent) startActivity(
+                            Intent(
+                                this@SplashScreen,
+                                RegisterActivity2::class.java
+                            )
+                        ) else startActivity(
+                            Intent(
+                                this@SplashScreen,
+                                RegisterActivity1::class.java
+                            )
+                        )
+                        finish()
+                    }, 500)
+                }
 
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                animation.setVisibility(View.GONE);
-                icon.setVisibility(View.VISIBLE);
-                text.setVisibility(View.VISIBLE);
-
-                new Handler(getMainLooper()).postDelayed(() -> {
-                    if (tokenPresent && namePresent)
-                        startActivity(new Intent(SplashScreen.this, MainActivity.class));
-                    else if(tokenPresent)
-                        startActivity(new Intent(SplashScreen.this, RegisterActivity2.class));
-                    else
-                        startActivity(new Intent(SplashScreen.this, RegisterActivity1.class));
-                    finish();
-                }, 500);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-            }
-        });
+                override fun onAnimationCancel(animator: Animator) {}
+                override fun onAnimationRepeat(animator: Animator) {}
+            })
+        }
     }
 }
