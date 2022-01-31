@@ -73,10 +73,6 @@ function Login() {
             </Form>
         </div>
         </div>
-
-        <div className="col-4 loginimg " >
-        <img  className="img-fluid "src="images/date.svg" alt ="blah" /> 
-        </div>
         </div>
         </>
 

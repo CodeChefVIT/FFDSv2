@@ -3,7 +3,7 @@ package com.codechef.ffds
 import androidx.room.TypeConverter
 import java.util.*
 
-class DateConverter {
+class DateTypeConverter {
 
     @TypeConverter
     fun fromDate(date: Date): Long {

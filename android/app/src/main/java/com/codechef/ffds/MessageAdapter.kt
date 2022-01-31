@@ -1,6 +1,10 @@
 package com.codechef.ffds
 
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +12,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import de.hdodenhof.circleimageview.CircleImageView
 
 class MessageAdapter internal constructor(
@@ -43,13 +48,16 @@ class MessageAdapter internal constructor(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder.javaClass) {
+
             MatchViewHolder::class.java -> {
                 val viewHolder = holder as MatchViewHolder
-                viewHolder.dp.setImageResource(arrayList[position].profileImage)
+                val imageArray = arrayList[position].profileImage
+                viewHolder.dp.setImageBitmap(BitmapFactory.decodeByteArray(imageArray.toByteArray(), 0, imageArray.size))
             }
             MessageViewHolder::class.java -> {
                 val viewHolder = holder as MessageViewHolder
-                viewHolder.dp.setImageResource(arrayList[position].profileImage)
+                val imageArray = arrayList[position].profileImage
+                viewHolder.dp.setImageBitmap(BitmapFactory.decodeByteArray(imageArray.toByteArray(), 0, imageArray.size))
                 viewHolder.last.text = arrayList[position].lastMessage
                 viewHolder.name.text = arrayList[position].name
             }

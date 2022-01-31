@@ -36,16 +36,15 @@ function App() {
             {loggedin ? (
               <LandingSection/>
             ) : (
-              <Account switch={islogin} toggle={(gaga) => setIslogin(gaga)}></Account>
+              <Account switch={islogin} toggle={(gaga) => setIslogin(gaga)}/>
             )}
 
           <div className="question">
-            <QnA></QnA>
-            {/* <Match></Match> */}
+            <QnA/>
           </div>
 
           <div className="footer">
-            <Footer></Footer>
+            <Footer/>
           </div>
         </Route>
       </Switch>    
