@@ -18,6 +18,7 @@ function MyVerticallyCenteredModal(props) {
         <Modal.Body >
           <h4>Centered Modal</h4>
           <p>
+
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum ex optio obcaecati, officiis deserunt modi aperiam accusamus accusantium soluta totam vitae similique sapiente nihil vel inventore eum in, sit animi ut delectus esse voluptas excepturi neque sunt? Laborum sit nostrum temporibus laudantium impedit doloremque optio tempora possimus ut, est quaerat recusandae quibusdam dignissimos provident, explicabo repellendus dolore? Ex velit, possimus quis quam temporibus doloremque nobis. Labore neque inventore iusto veniam, dolorum ipsa nihil facilis quod nobis? Error cupiditate sit similique tenetur fugit distinctio fuga eveniet eligendi porro voluptas, enim, maiores vero hic, magnam rerum placeat dolor. Facere, inventore. Sequi, qui!
           </p>
         </Modal.Body>
@@ -31,12 +32,16 @@ function MyVerticallyCenteredModal(props) {
 const Matches = () => {
     const [modalShow, setModalShow] = React.useState(false);
   return (
+
     <div className="container">
+
       <Carousel>
         <Carousel.Item  onClick={() => setModalShow(true)}>
           <img
             className="d-block w-100"
+
             src="https://source.unsplash.com/WLUHO9A_xik/500x500"
+
             alt="First slide"
           />
           
@@ -44,7 +49,9 @@ const Matches = () => {
         <Carousel.Item onClick={() => setModalShow(true)}>
           <img
             className="d-block w-100"
+
             src="https://source.unsplash.com/user/erondu/500x500"
+
             alt="Second slide"
           />
 
@@ -53,6 +60,7 @@ const Matches = () => {
         <Carousel.Item onClick={() => setModalShow(true)}>
           <img
             className="d-block w-100"
+
             src="https://source.unsplash.com/user/erondu/500x500"
             alt="Third slide"
           />

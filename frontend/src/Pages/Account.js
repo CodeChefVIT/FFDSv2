@@ -6,7 +6,7 @@ import "./Account.css";
 function Account(props) {
   return (
     <>
-      {props.switch ? <Login></Login> : <Signup></Signup>}
+      {props.switch ? <Login></Login> : <Signup></Signup> }
 
       <div className="loginmessage">
         <div

@@ -2,7 +2,9 @@ import React from "react";
 import { useState } from "react";
 import '../components/Login.css';
 import './Moreinfo.css';
+
 import ReactDOM from "react-dom";
+
 
 
 function Moreinfo() {
@@ -89,6 +91,7 @@ function Moreinfo() {
           </div>
         </form>
       </div>
+
 
       <div className="footer">
         <div className="row">
